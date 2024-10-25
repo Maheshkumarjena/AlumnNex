@@ -1,0 +1,346 @@
+/* @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"); */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Light Mode LinkedIn Colors */
+:root {
+  --primary-bg-color: #ffffff;
+  --primary-text-color: #005582;
+  --linkedin-bg-color-light: #0077b5;
+  --linkedin-text-color-light: #ffffff;
+  --linkedin-button-bg-color-light: #0077b5;
+  --linkedin-button-hover-bg-color-light: #005582;
+}
+
+.navbar {
+  position: sticky;
+  top: 0;
+}
+
+
+
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
+@media (max-width: 1024px) {
+  .addAnimation {
+    position: relative;
+    right: 0px !important;
+    transition: right 0.3s;
+  }
+  .removeAnimation {
+    position: relative;
+    right: -110vw !important;
+    transition: right 0.3s;
+  }
+}
+
+
+.hide-scrollbar {
+  overflow: auto;
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;     /* Firefox */
+  scroll-behavior: smooth;
+  overflow-x: hidden;   /* Smooth scrolling across all browsers */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+
+
+/* Dark Mode LinkedIn Colors */
+.dark {
+  --primary-bg-color: #1c1c1e;
+  --primary-text-color: #e5e5e7;
+  --linkedin-bg-color-dark: #0a66c2;
+  --linkedin-text-color-dark: #ffffff;
+  --linkedin-button-bg-color-dark: #0a66c2;
+  --linkedin-button-hover-bg-color-dark: #004182;
+}
+
+/* General Body Styles */
+body {
+  background-color: var(--primary-bg-color);
+  color: var(--primary-text-color);
+}
+
+/* LinkedIn Themed Button Styles */
+.linkedin-button {
+  background-color: var(--linkedin-button-bg-color-light);
+  color: var(--linkedin-text-color-light);
+  border-radius: 9999px;
+  font-family: var(--primary-font);
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+  border: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.linkedin-button:hover {
+  background-color: var(--linkedin-button-hover-bg-color-light);
+}
+
+/* Dark Mode LinkedIn Button Styles */
+.dark .linkedin-button {
+  background-color: var(--linkedin-button-bg-color-dark);
+  color: var(--linkedin-text-color-dark);
+}
+
+.dark .linkedin-button:hover {
+  background-color: var(--linkedin-button-hover-bg-color-dark);
+}
+
+/* Media Queries and Additional Styles */
+@media (max-width: 1024px) {
+  .addAnimation {
+    position: relative;
+    right: 0px !important;
+    transition: right 0.3s;
+  }
+  .removeAnimation {
+    position: relative;
+    right: -110vw !important;
+    transition: right 0.3s;
+  }
+}
+
+.navbar {
+  position: sticky;
+  top: 0;
+}
+
+.hide-scrollbar {
+  overflow: auto;
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;     /* Firefox */
+  scroll-behavior: smooth;
+  overflow-x: hidden;   /* Smooth scrolling across all browsers */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+
+.fill_animation_btn {
+  border-radius: 9999px;
+  background-color: transparent;
+  color: var(--primary-color);
+  font-family: var(--support-font);
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+  border: 1px solid var(--primary-color);
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Light Mode */
+.fill_animation_btn {
+  background-color: transparent;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+
+.fill_animation_btn:hover {
+  color: var(--secondary-color);
+}
+
+.fill_animation_btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background-color: var(--primary-color);
+  transition: all 0.3s ease;
+  z-index: -1;
+}
+
+.fill_animation_btn:hover::before {
+  left: 0;
+}
+
+/* Dark Mode */
+.dark .fill_animation_btn {
+  background-color: transparent;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+
+.dark .fill_animation_btn:hover {
+  color: var(--secondary-color);
+}
+
+.dark .fill_animation_btn::before {
+  background-color: var(--primary-color);
+}
+
+.black_btn {
+  border: 1px solid var(--button-border-color);
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+  text-align: center;
+  font-size: 0.875rem;
+  font-family: 'Inter', sans-serif;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+/* Light Mode */
+.black_btn {
+  border: 1px solid var(--primary-color);
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+}
+
+.black_btn:hover {
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+}
+
+/* Dark Mode */
+.dark .black_btn {
+  border: 1px solid var(--button-border-color);
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+}
+
+.dark .black_btn:hover {
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+}
+
+/* Light Mode Colors */
+:root {
+  --primary-color: #0077b5; /* LinkedIn blue or your choice */
+  --secondary-color: #ffffff; /* White or your choice */
+  --button-border-color: #0077b5;
+  --button-hover-bg-color: #005582;
+}
+
+/* Dark Mode Colors */
+.dark {
+  --primary-color: #0a66c2;
+  --secondary-color: #ffffff;
+  --button-border-color: #0a66c2;
+  --button-hover-bg-color: #004182;
+}
+
+/* .fill_animation_btn Styles */
+.fill_animation_btn {
+  border-radius: 9999px;
+  background-color: transparent;
+  color: var(--primary-color);
+  font-family: var(--support-font);
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+  border: 1px solid var(--primary-color);
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.fill_animation_btn:hover {
+  color: var(--secondary-color);
+}
+
+.fill_animation_btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background-color: var(--primary-color);
+  transition: all 0.3s ease;
+  z-index: -1;
+}
+
+.fill_animation_btn:hover::before {
+  left: 0;
+}
+
+/* Dark Mode */
+.dark .fill_animation_btn {
+  border: 1px solid var(--primary-color);
+}
+
+.dark .fill_animation_btn:hover {
+  color: var(--secondary-color);
+}
+
+.dark .fill_animation_btn::before {
+  background-color: var(--primary-color);
+}
+
+/* .black_btn Styles */
+.black_btn {
+  border: 1px solid var(--button-border-color);
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+  text-align: center;
+  font-size: 0.875rem;
+  font-family: 'Inter', sans-serif;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+.black_btn:hover {
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+}
+
+/* Dark Mode */
+.dark .black_btn {
+  border: 1px solid var(--button-border-color);
+}
+
+.dark .black_btn:hover {
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+}
+
+/* .outline_btn Styles */
+.outline_btn {
+  border-radius: 9999px;
+  border: 1px solid var(--button-border-color);
+  background-color: transparent;
+  color: var(--primary-color);
+  text-align: center;
+  font-size: 0.875rem;
+  font-family: 'Inter', sans-serif;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+.outline_btn:hover {
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+}
+
+/* Dark Mode */
+.dark .outline_btn {
+  border: 1px solid var(--button-border-color);
+}
+
+.dark .outline_btn:hover {
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+}
+
+
+.glassmorphism {
+  background-color: rgba(246, 238, 238, 0.2);
+  box-shadow: inset 10px -50px 94px rgba(199, 199, 199, 0.2);
+  backdrop-filter: blur(30px);
+}
