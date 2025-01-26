@@ -5,9 +5,12 @@ import React from 'react';
 import Link from 'next/link';
 import { useSelector } from 'react-redux';
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+
 
 const Page = () => {
   const theme = useSelector((state) => state.theme);
+  const router = useRouter();
 
   const isDarkMode = theme === 'dark';
 
@@ -28,11 +31,15 @@ const Page = () => {
     }
     try {
       const response = await axios.post(
-        'http://localhost:3001/alumni',
-        { name, email, dob, password, almaMater, lastYearOfEducation } // Include new fields in the request
+        'http://localhost:5000/api/auth/',
+        { username:name, email, password, dob, almaMater, lastYearOfEducation } // Include new fields in the request
       );
       console.log(response);
-      setMessage('Form submitted successfully');
+      setMessage('Signup successfull');
+        setTimeout(() => {
+        router.push("/Signin"); // Redirect to the home page or any other page
+      }, 1000);
+
     } catch (error) {
       console.error('Error details:', error.response ? error.response.data : error.message);
       setMessage('Failed to register. Please try again');
