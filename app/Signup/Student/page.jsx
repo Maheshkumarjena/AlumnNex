@@ -5,9 +5,12 @@ import React from 'react';
 import Link from 'next/link';
 import { useSelector } from 'react-redux';
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { set } from "mongoose";
 
 const Page = () => {
   const theme = useSelector((state) => state.theme);
+  const router = useRouter();
 
   const isDarkMode = theme === 'dark';
 
@@ -24,19 +27,35 @@ const Page = () => {
       setMessage('Passwords do not match');
       return;
     }
+    
     try {
+      const routePath = window.location.pathname; // Capture the current route
+      const isStudentRoute = routePath.includes('Student'); // Check if the route contains "Alumni"
+      console.log(isStudentRoute)
       const response = await axios.post(
-        'http://localhost:3001/student',
-        { name, email, dob, password }
-        
+        'http://localhost:5000/api/auth/',
+        { username:name, email, password, dob  },
+        {
+          headers: {
+            'X-Source-Route': routePath, // Adding the custom header indicating the current route,
+            'X-Source-Is-Type' : isStudentRoute ? 'Student' : ""  
+          }
+        }
       );
+
       console.log(response);
-      setMessage('Form submitted successfully');
+      setMessage('Signup successful');
+      setTimeout(() => {
+        router.push("/Signin"); // Redirect to the home page or any other page
+      }, 1000);
     } catch (error) {
       console.error('Error details:', error.response ? error.response.data : error.message);
       setMessage('Failed to register. Please try again');
+      setTimeout(() => {
+        setMessage('');
+      }, 1000);
     }
-  };
+};
   
   return (
     <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-white'} flex flex-col justify-center sm:px-6 lg:px-8`}>
@@ -116,6 +135,11 @@ const Page = () => {
               </span>
             </div>
           </form>
+          {message && (
+            <div className={`mt-4 text-center ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>
+              {message}
+            </div>
+          )}
         </div>
       </div>
     </div>

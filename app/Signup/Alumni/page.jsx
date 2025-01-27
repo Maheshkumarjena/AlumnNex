@@ -22,6 +22,7 @@ const Page = () => {
   const [almaMater, setAlmaMater] = useState(''); // New state for Alma mater
   const [lastYearOfEducation, setLastYearOfEducation] = useState(''); // New state for Year of education
   const [message, setMessage] = useState('');
+  const [loading,setLoading]=useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,23 +30,36 @@ const Page = () => {
       setMessage('Passwords do not match');
       return;
     }
+    
     try {
+      const routePath = window.location.pathname; // Capture the current route
+      const isAlumniRoute = routePath.includes('Alumni'); // Check if the route contains "Alumni"
+      console.log(isAlumniRoute)
       const response = await axios.post(
         'http://localhost:5000/api/auth/',
-        { username:name, email, password, dob, almaMater, lastYearOfEducation } // Include new fields in the request
+        { username: name, email, password, dob, almaMater, lastYearOfEducation },
+        {
+          headers: {
+            'X-Source-Route': routePath, // Adding the custom header indicating the current route,
+            'X-Source-Is-Type' : isAlumniRoute ? 'Alumni' : 'Student' 
+          }
+        }
       );
+
       console.log(response);
-      setMessage('Signup successfull');
-        setTimeout(() => {
+      setMessage('Signup successful');
+      setTimeout(() => {
         router.push("/Signin"); // Redirect to the home page or any other page
       }, 1000);
-
     } catch (error) {
       console.error('Error details:', error.response ? error.response.data : error.message);
       setMessage('Failed to register. Please try again');
+      setTimeout(() => {
+        setMessage('');
+      }, 1000);
     }
-  };
-  
+};
+
   return (
     <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-white'} flex flex-col justify-center sm:px-6 lg:px-8`}>
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
