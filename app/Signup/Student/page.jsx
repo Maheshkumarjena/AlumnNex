@@ -33,7 +33,7 @@ const Page = () => {
       const isStudentRoute = routePath.includes('Student'); // Check if the route contains "Alumni"
       console.log(isStudentRoute)
       const response = await axios.post(
-        'http://localhost:5000/api/auth/',
+        'http://localhost:5000/api/auth/signup',
         { username:name, email, password, dob  },
         {
           headers: {

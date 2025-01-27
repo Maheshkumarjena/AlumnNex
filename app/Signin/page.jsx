@@ -13,27 +13,43 @@ const Page = () => {
 
 // Example usage
 
-
+  const [message,setMessage]=useState('')
   const [email,setEmail]=useState('')
   const [password,setPassword]=useState('')
- 
-  const logIn = async (e) => {
+
+  const handleLogin = async (e) => {
     e.preventDefault();
+  
     try {
-      const response = await axios.post('http://localhost:3001/signin',
-        {  // Ensure this URL is correct
-        email,
-        password
-      })
-      console.log(response);
-      console.log('Submitted successfully');
-    } 
-      catch (err) {
-      console.error(err);
-      console.log('Submission unsuccessful');
+      const response = await axios.post(
+        'http://localhost:5000/api/auth/signin',
+        { email, password }, // Data payload
+        {
+          headers: {
+            'Content-Type': 'application/json', // Headers
+          },
+        }
+      );
+  
+      // If the response is successful
+      if (response.status === 200) {
+        const { token } = response.data; // Extract token from response
+        localStorage.setItem('token', token); // Store token in localStorage
+        setMessage('Login successful!');
+        console.log('Login successful:', response.data);
+      }
+    } catch (error) {
+      // Handle error
+      if (error.response) {
+        setMessage(error.response.data.message || 'Login failed'); // Server error message
+        console.error('Error response:', error.response.data);
+      } else {
+        setMessage('Error during login');
+        console.error('Error:', error.message);
+      }
     }
   };
-
+  
   
 
   return (
@@ -43,7 +59,7 @@ const Page = () => {
         <div className="min-w-md sm:mx-auto sm:w-full sm:max-w-md">
           <div className={`glassmorphism border-[1px] border-black py-2 px-4 shadow sm:rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
             <div className="font-bold text-2xl text-center pb-5 ">Signin</div>
-            <form onSubmit={logIn} className="space-y-6" action="#" method="POST">
+            <form onSubmit={handleLogin} className="space-y-6" action="#" method="POST">
               <div>
                 <label htmlFor="email" className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   Email address
@@ -57,7 +73,7 @@ const Page = () => {
                     value={email}
                     onChange={(e)=>setEmail(e.target.value)}
                     required
-                    className={`appearance-none rounded-md relative block w-full px-3 py-2 border ${isDarkMode ? 'border-gray-700' : 'border-gray-300'} placeholder-gray-500 ${isDarkMode ? 'text-white' : 'text-gray-900'} focus:outline-none focus:ring-violet-500 focus:border-violet-500 focus:z-10 sm:text-sm`}
+                    className={`appearance-none rounded-md relative block w-full px-3 py-2 border ${isDarkMode ? 'border-gray-700' : 'border-gray-300'} placeholder-gray-500 ${isDarkMode ? 'text-white' : 'text-gray-900'} focus:outline-none focus:ring-blue-500 focus:border-black focus:z-10 sm:text-sm bg-transparent`}
                     placeholder="Enter your email address"
                   />
                 </div>
