@@ -4,23 +4,30 @@ import axios from "axios";
 import React from 'react';
 import Link from 'next/link';
 import { useState } from "react";
-import { useSelector } from 'react-redux'; // Use 'useSelector' correctly
+import { useDispatch,useSelector } from 'react-redux'; // Use 'useSelector' correctly
+import { useRouter } from "next/navigation";
+import { signInFailure,signInStart,signInSuccess } from "@store/features/user/userSlice";
+
 
 const Page = () => {
   const theme = useSelector((state) => state.theme); 
   const isDarkMode = theme === 'dark';
-
-
+  const router = useRouter();
+  const dispatch = useDispatch(); // Use 'useDispatch' correctly
 // Example usage
+  const {loading,error,currentUser} = useSelector((state) => state.user);
 
-  const [message,setMessage]=useState('')
+  const [message, setMessage] = useState('');
   const [email,setEmail]=useState('')
   const [password,setPassword]=useState('')
 
+
+
   const handleLogin = async (e) => {
     e.preventDefault();
-  
+    
     try {
+      dispatch(signInStart())
       const response = await axios.post(
         'http://localhost:5000/api/auth/signin',
         { email, password }, // Data payload
@@ -33,10 +40,13 @@ const Page = () => {
   
       // If the response is successful
       if (response.status === 200) {
-        const { token } = response.data; // Extract token from response
-        localStorage.setItem('token', token); // Store token in localStorage
+        dispatch(signInSuccess(response.data.user))
         setMessage('Login successful!');
         console.log('Login successful:', response.data);
+        setTimeout(() => {
+          router.push("/");
+          setMessage("") // Redirect to the home page or any other page
+        }, 1000);
       }
     } catch (error) {
       // Handle error
@@ -44,10 +54,12 @@ const Page = () => {
         setMessage(error.response.data.message || 'Login failed'); // Server error message
         console.error('Error response:', error.response.data);
       } else {
+        dispatch(signInFailure(error))
         setMessage('Error during login');
         console.error('Error:', error.message);
       }
     }
+
   };
   
   
@@ -127,7 +139,7 @@ const Page = () => {
                 </button>
               </div>
             </form>
-
+          
             <div className="mt-6">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
@@ -158,6 +170,21 @@ const Page = () => {
                 </div>
               </div>
             </div>
+            
+            {message && (
+            <div className={`mt-4 text-center ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>
+              {message}
+            </div>
+          )}
+          {/* loading */}
+          
+          {loading && (
+            <div className={`mt-4 text-center ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>
+              "loading..."
+              {console.log("loading...")}
+            </div>
+          )}
+
           </div>
         </div>
       </div>

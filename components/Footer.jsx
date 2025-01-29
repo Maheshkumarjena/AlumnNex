@@ -14,8 +14,7 @@ import {
   faFacebook,
 } from "@fortawesome/free-brands-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
-import { toggleTheme } from "@Lib/store/features/theme/themeSlice";
-
+import { toggleTheme } from "@store/features/theme/themeSlice";
 const Footer = () => {
   const theme = useSelector((state) => state.theme);
 

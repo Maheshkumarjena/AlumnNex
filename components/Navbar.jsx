@@ -3,10 +3,10 @@ import Link from "next/link";
 import React, { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSun, faMoon, faUser } from "@fortawesome/free-solid-svg-icons";
-import { toggleTheme } from "@Lib/store/features/theme/themeSlice";
+import {toggleTheme} from "@store/features/theme/themeSlice";
 import { useDispatch, useSelector } from "react-redux";
 import AlumniCard from "./AlumniCard";
-import { login,logout } from "@Lib/store/features/user/userSlice";
+import { login, logout } from "@store/features/user/userSlice";
 import axios from "axios";
 
 
@@ -16,7 +16,7 @@ const Navbar = () => {
 
   const dispatch = useDispatch();
   const loggedIn = useSelector((state) => state.user.loggedIn);
-  const user = useSelector((state) => state.user.users[0]);
+  // const user = useSelector((state) => state.user.users[0]);
   // state.user.users[0]: Retrieves the first user in the users array from the store.
   const theme=useSelector((state)=>state.theme);
 

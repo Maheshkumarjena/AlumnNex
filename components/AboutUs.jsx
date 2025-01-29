@@ -3,9 +3,7 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';import { useDispatch,useSelector } from "react-redux";
-import { toggleTheme } from "@Lib/store/features/theme/themeSlice";
-
-
+import { toggleTheme } from '@store/features/theme/themeSlice';
 
 const AboutUs = () => {
   const theme = useSelector((state) => state.theme);

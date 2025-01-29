@@ -1,4 +1,4 @@
-import getInitialTheme from "./GetInitialTheme";
+// import getInitialTheme from "./GetInitialTheme";
 import { createSlice } from "@reduxjs/toolkit";
 
 const themeSlice = createSlice({
