@@ -3,10 +3,10 @@ import Link from "next/link";
 import React, { useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSun, faMoon, faUser } from "@fortawesome/free-solid-svg-icons";
-import {toggleTheme} from "@store/features/theme/themeSlice";
+import { toggleTheme } from "@store/features/theme/themeSlice";
 import { useDispatch, useSelector } from "react-redux";
 import AlumniCard from "./AlumniCard";
-import { login, logout } from "@store/features/user/userSlice";
+import { logout } from "@store/features/user/userSlice";
 import axios from "axios";
 import { getCurrentUser } from "@utils/authUtils";
 
@@ -16,37 +16,41 @@ const Navbar = () => {
 
   const dispatch = useDispatch();
   const loggedIn = useSelector((state) => state.user.loggedIn);
-  // const user = useSelector((state) => state.user.users[0]);
+  let user = null;
+  if (typeof window !== 'undefined') {
+     user = getCurrentUser();
+  }
+  console.log("user=>>>>>>>>", user)
   // state.user.users[0]: Retrieves the first user in the users array from the store.
-  const theme=useSelector((state)=>state.theme);
+  const theme = useSelector((state) => state.theme);
 
-      
-  const fetchUser = async () => {
-    console.log("fetch user called")
-    try {
-      const response = await axios.get('http://localhost:5000/api/users/getProfile', {
-        withCredentials: true, // Include cookies
-      });
-      console.log(response.data);
-      console.log("data after authentication")
-      if (response.data.status) {
-        console.log(response.data.user);
-        dispatch(login(response.data.user)); // Dispatch login action with user data
-      } 
-    } catch (err) {
-      console.error('Verification failed  :', err.message);
-      dispatch(logout()); // Dispatch logout action in case of error
-    }
-  };
 
-  useEffect(() => { 
-   
+  useEffect(() => {
+
+    const fetchUser = async () => {
+      console.log("fetch user called")
+      try {
+        const response = await axios.get('http://localhost:5000/api/users/getProfile', {
+          withCredentials: true, // Include cookies
+        });
+        console.log(response.data);
+        console.log("data after authentication")
+        if (response.data.status) {
+          console.log(response.data.user);
+          dispatch(login(response.data.user)); // Dispatch login action with user data
+        }
+      } catch (err) {
+        console.error('Verification failed  :', err.message);
+        dispatch(logout()); // Dispatch logout action in case of error
+      }
+    };
+
     fetchUser();
     document.documentElement.classList.add(theme === "dark" ? "dark" : "light");
   }, [dispatch]);
 
   useEffect(() => {
-    
+
     return () => {
       document.documentElement.classList.add(theme === "dark" ? "dark" : "light");
     };
@@ -62,7 +66,6 @@ const Navbar = () => {
 
 
   const handleBurgerClick = () => {
-    fetchUser();
 
     console.log("handle burger click");
     const menu = document.querySelector(".ulElement");
@@ -84,13 +87,11 @@ const Navbar = () => {
   return (
     <div className="overflow-x-hidden sticky top-0 ">
       <nav
-        className={`navbar ${
-          theme === "light"
+        className={`navbar ${theme === "light"
             ? "bg-white border-gray-200"
             : "bg-gray-900 border-gray-800"
-        } w-[100vw] py-2.5 ${
-          theme === "light" ? "text-gray-900" : "text-white"
-        }`}
+          } w-[100vw] py-2.5 ${theme === "light" ? "text-gray-900" : "text-white"
+          }`}
       >
         <div className="flex flex-wrap items-center justify-between max-w-[1500px] px-[3px] md:px-4  mx-auto">
           <Link href="#" className="z-50 flex items-center">
@@ -101,9 +102,8 @@ const Navbar = () => {
             />
             <span
               z-50
-              className={`self-center hidden xsm:flex text-xl font-semibold whitespace-nowrap ${
-                theme === "light" ? "text-gray-900" : "text-white"
-              }`}
+              className={`self-center hidden xsm:flex text-xl font-semibold whitespace-nowrap ${theme === "light" ? "text-gray-900" : "text-white"
+                }`}
             >
               AlumNexus
             </span>
@@ -111,9 +111,8 @@ const Navbar = () => {
 
           <div className="flex items-center lg:order-2">
             <div
-              className={` px-[2vw] flex justify-center items-center ${
-                theme === "dark" ? "dark:bg-gray-900" : "bg-white"
-              }`}
+              className={` px-[2vw] flex justify-center items-center ${theme === "dark" ? "dark:bg-gray-900" : "bg-white"
+                }`}
             >
               <button
                 onClick={handleThemeToggle}
@@ -121,9 +120,8 @@ const Navbar = () => {
               >
                 <FontAwesomeIcon
                   icon={theme === "dark" ? faSun : faMoon}
-                  className={`text-${
-                    theme === "dark" ? "yellow-500" : "violet-700"
-                  } transition-colors duration-300`}
+                  className={`text-${theme === "dark" ? "yellow-500" : "violet-700"
+                    } transition-colors duration-300`}
                   size="lg"
                 />
               </button>
@@ -131,56 +129,54 @@ const Navbar = () => {
 
             {/* signUP */}
 
-{loggedIn ? <div>
-  <Link
-      href="/Signup"
-      className={`black_btn hidden sm:flex rounded-[20px] text-white ${
-        theme === "light" ? "text-white" : "bg-blue-700 text-white"
-      } hover:${theme === "light" ? "bg-gray-900" : "bg-blue-700"} focus:ring-2 font-medium rounded-lg text-sm px-2 sm:px-4 lg:px-4 py-[1vw] md:py-1.5 sm:mr-2 lg:mr-0 focus:outline-none`}
-    >
-      <p>
-        <FontAwesomeIcon
-          icon={faUser}
-          className="mr-1 sm:mr-2 md:mr-3 h-[13px] w-[13px]"
-        />{" "}
-      </p>
-      <p>{user.name}</p>
-    </Link>
+            {loggedIn ? 
+            <div>
+              <Link
+                href="/Signup"
+                className={` flex rounded-[20px] text-white ${theme === "light" ? "text-white" : " text-white"
+                  } hover:${theme === "light" ? "bg-gray-900" : ""} focus:ring-2 font-medium rounded-lg text-sm px-2 sm:px-4 lg:px-4 py-[1vw] md:py-1.5 sm:mr-2 lg:mr-0 `}
+              >
+                <p>
+                  <FontAwesomeIcon
+                    icon={faUser}
+                    className=" sm:mr-2 md:mr-3 h-[13px] w-[13px]"
+                  />{" "}
+                </p>
+                <p className="hidden sm:flex">{user.username}</p>
+              </Link>
 
-</div>  : (
-  <div className="flex flex-row">
-    <Link
-      href="/Signup"
-      className={`black_btn hidden sm:flex rounded-[20px] text-white ${
-        theme === "light" ? "text-white" : "bg-blue-700 text-white"
-      } hover:${theme === "light" ? "bg-gray-900" : "bg-blue-700"} focus:ring-2 font-medium rounded-lg text-sm px-2 sm:px-4 lg:px-4 py-[1vw] md:py-1.5 sm:mr-2 lg:mr-0 focus:outline-none`}
-    >
-      <p>
-        <FontAwesomeIcon
-          icon={faUser}
-          className="mr-1 sm:mr-2 md:mr-3 h-[13px] w-[13px]"
-        />{" "}
-      </p>
-      <p>Signup</p>
-    </Link>
+            </div> : (
+              <div className="flex flex-row">
+                <Link
+                  href="/Signup"
+                  className={`black_btn hidden sm:flex rounded-[20px] text-white ${theme === "light" ? "text-white" : "bg-blue-700 text-white"
+                    } hover:${theme === "light" ? "bg-gray-900" : "bg-blue-700"} focus:ring-2 font-medium rounded-lg text-sm px-2 sm:px-4 lg:px-4 py-[1vw] md:py-1.5 sm:mr-2 lg:mr-0 focus:outline-none`}
+                >
+                  <p>
+                    <FontAwesomeIcon
+                      icon={faUser}
+                      className="mr-1 sm:mr-2 md:mr-3 h-[13px] w-[13px]"
+                    />{" "}
+                  </p>
+                  <p>Signup</p>
+                </Link>
 
-    <Link
-      href="/Signin"
-      className={`fill_animation_btn flex flex-row rounded-[30px] text-white ${
-        theme === "light" ? "text-white" : "bg-blue-700 text-white"
-      } hover:${theme === "light" ? "bg-gray-900" : "bg-blue-700"} focus:ring-2 font-medium rounded-lg text-sm px-[2vw] sm:px-4 lg:px-4 py-[0.5vw] md:py-1.5 sm:mr-2 lg:mr-0 focus:outline-none ml-0 sm:ml-4`}
-    >
-      <p>
-        <FontAwesomeIcon
-          icon={faUser}
-          className="mr-1 sm:mr-2 md:mr-3 h-[13px] w-[13px]"
-        />{" "}
-      </p>
-      <p>Signin</p>
-    </Link>
-    </div>
-)
-}
+                <Link
+                  href="/Signin"
+                  className={`fill_animation_btn flex flex-row rounded-[30px] text-white ${theme === "light" ? "text-white" : "bg-blue-700 text-white"
+                    } hover:${theme === "light" ? "bg-gray-900" : "bg-blue-700"} focus:ring-2 font-medium rounded-lg text-sm px-[2vw] sm:px-4 lg:px-4 py-[0.5vw] md:py-1.5 sm:mr-2 lg:mr-0 focus:outline-none ml-0 sm:ml-4`}
+                >
+                  <p>
+                    <FontAwesomeIcon
+                      icon={faUser}
+                      className="mr-1 sm:mr-2 md:mr-3 h-[13px] w-[13px]"
+                    />{" "}
+                  </p>
+                  <p>Signin</p>
+                </Link>
+              </div>
+            )
+            }
 
 
             <button
@@ -224,18 +220,16 @@ const Navbar = () => {
               onClick={() => {
                 handleBurgerClick();
               }}
-              className={`ulElement  flex hidden lg:flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0  removeAnimation ${
-                theme === "light" ? "text-gray-900" : "text-white"
-              }`}
+              className={`ulElement  flex hidden lg:flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0  removeAnimation ${theme === "light" ? "text-gray-900" : "text-white"
+                }`}
             >
               <li>
                 <Link
                   href="/"
-                  className={`block py-2 pl-3 pr-4 ${
-                    theme === "light"
+                  className={`block py-2 pl-3 pr-4 ${theme === "light"
                       ? "text-gray-900 border-b border-gray-100 hover:bg-[#F8F8F8] "
                       : "text-white border-gray-800 hover:bg-gray-700"
-                  } hover:bg-[#F8F8F8] lg:hover:bg-transparent lg:border-0 lg:hover:text-blue-400 lg:p-0`}
+                    } hover:bg-[#F8F8F8] lg:hover:bg-transparent lg:border-0 lg:hover:text-blue-400 lg:p-0`}
                 >
                   Home
                 </Link>
@@ -243,11 +237,10 @@ const Navbar = () => {
               <li>
                 <Link
                   href="About"
-                  className={`block py-2 pl-3 pr-4 ${
-                    theme === "light"
+                  className={`block py-2 pl-3 pr-4 ${theme === "light"
                       ? "text-gray-900 border-b border-gray-100 hover:bg-[#F8F8F8] "
                       : "text-white border-gray-800 hover:bg-gray-700"
-                  } hover:bg-[#F8F8F8] lg:hover:bg-transparent lg:border-0 lg:hover:text-blue-400 lg:p-0`}
+                    } hover:bg-[#F8F8F8] lg:hover:bg-transparent lg:border-0 lg:hover:text-blue-400 lg:p-0`}
                 >
                   About
                 </Link>
@@ -255,11 +248,10 @@ const Navbar = () => {
               <li>
                 <Link
                   href="Alumni"
-                  className={`block py-2 pl-3 pr-4 ${
-                    theme === "light"
+                  className={`block py-2 pl-3 pr-4 ${theme === "light"
                       ? "text-gray-900 border-b border-gray-100 hover:bg-[#F8F8F8] "
                       : "text-white border-gray-800 hover:bg-gray-700"
-                  } hover:bg-[#F8F8F8] lg:hover:bg-transparent lg:border-0 lg:hover:text-blue-400 lg:p-0`}
+                    } hover:bg-[#F8F8F8] lg:hover:bg-transparent lg:border-0 lg:hover:text-blue-400 lg:p-0`}
                 >
                   Alumni
                 </Link>
@@ -268,11 +260,10 @@ const Navbar = () => {
               <li>
                 <Link
                   href="Events"
-                  className={`block py-2 pl-3 pr-4 ${
-                    theme === "light"
+                  className={`block py-2 pl-3 pr-4 ${theme === "light"
                       ? "text-gray-900 border-b border-gray-100 hover:bg-[#F8F8F8] "
                       : "text-white border-gray-800 hover:bg-gray-700"
-                  } hover:bg-[#F8F8F8] lg:hover:bg-transparent lg:border-0 lg:hover:text-blue-400 lg:p-0`}
+                    } hover:bg-[#F8F8F8] lg:hover:bg-transparent lg:border-0 lg:hover:text-blue-400 lg:p-0`}
                 >
                   Events
                 </Link>
@@ -280,24 +271,23 @@ const Navbar = () => {
               <li>
                 <Link
                   href="Resources"
-                  className={`block py-2 pl-3 pr-4 ${
-                    theme === "light"
+                  className={`block py-2 pl-3 pr-4 ${theme === "light"
                       ? "text-gray-900 border-b border-gray-100 hover:bg-[#F8F8F8] "
                       : "text-white border-gray-800 hover:bg-gray-700"
-                  } hover:bg-[#F8F8F8] lg:hover:bg-transparent lg:border-0 lg:hover:text-blue-400 lg:p-0`}
+                    } hover:bg-[#F8F8F8] lg:hover:bg-transparent lg:border-0 lg:hover:text-blue-400 lg:p-0`}
                 >
                   Resources
                 </Link>
               </li>
               {/* Signup */}
-              <li>
+              
+              {loggedIn ? "" :
+              (<li>
                 <Link
                   href="/Signup"
-                  className={` black_btn  flex sm:hidden  hover:text-white  rounded-[20px] text-white ${
-                    theme === "light" ? " text-white" : "bg-blue-700 text-white"
-                  } hover:${
-                    theme === "light" ? "bg-gray-900" : "bg-blue-700"
-                  } focus:ring-2  font-medium rounded-lg text-sm px-2 sm:px-4  lg:px-4 py-[1vw] md:py-1.5 sm:mr-2 lg:mr-0 focus:outline-none mx-3  `}
+                  className={` black_btn  flex sm:hidden  hover:text-white  rounded-[20px] text-white ${theme === "light" ? " text-white" : "bg-blue-700 text-white"
+                    } hover:${theme === "light" ? "bg-gray-900" : "bg-blue-700"
+                    } focus:ring-2  font-medium rounded-lg text-sm px-2 sm:px-4  lg:px-4 py-[1vw] md:py-1.5 sm:mr-2 lg:mr-0 focus:outline-none mx-3  `}
                 >
                   <p>
                     <FontAwesomeIcon
@@ -307,7 +297,8 @@ const Navbar = () => {
                   </p>
                   <p>Signup</p>
                 </Link>
-              </li>
+              </li>) 
+}
             </ul>
           </div>
         </div>
