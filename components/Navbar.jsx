@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import AlumniCard from "./AlumniCard";
 import { login, logout } from "@store/features/user/userSlice";
 import axios from "axios";
-
+import { getCurrentUser } from "@utils/authUtils";
 
 
 
@@ -20,21 +20,27 @@ const Navbar = () => {
   // state.user.users[0]: Retrieves the first user in the users array from the store.
   const theme=useSelector((state)=>state.theme);
 
-  useEffect(() => { 
-    const fetchUser = async () => {
-      try {
-        const response = await axios.get('http://localhost:3001/verify', {
-          withCredentials: true, // Include cookies
-        });
-        if (response.data.status) {
-          dispatch(login(response.data.user)); // Dispatch login action with user data
-        } 
-      } catch (err) {
-        console.error('Verification failed:', err.message);
-        dispatch(logout()); // Dispatch logout action in case of error
-      }
-    };
+      
+  const fetchUser = async () => {
+    console.log("fetch user called")
+    try {
+      const response = await axios.get('http://localhost:5000/api/users/getProfile', {
+        withCredentials: true, // Include cookies
+      });
+      console.log(response.data);
+      console.log("data after authentication")
+      if (response.data.status) {
+        console.log(response.data.user);
+        dispatch(login(response.data.user)); // Dispatch login action with user data
+      } 
+    } catch (err) {
+      console.error('Verification failed  :', err.message);
+      dispatch(logout()); // Dispatch logout action in case of error
+    }
+  };
 
+  useEffect(() => { 
+   
     fetchUser();
     document.documentElement.classList.add(theme === "dark" ? "dark" : "light");
   }, [dispatch]);
@@ -56,6 +62,8 @@ const Navbar = () => {
 
 
   const handleBurgerClick = () => {
+    fetchUser();
+
     console.log("handle burger click");
     const menu = document.querySelector(".ulElement");
     console.log(menu);

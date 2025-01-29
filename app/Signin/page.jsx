@@ -21,8 +21,6 @@ const Page = () => {
   const [email,setEmail]=useState('')
   const [password,setPassword]=useState('')
 
-
-
   const handleLogin = async (e) => {
     e.preventDefault();
     
@@ -35,6 +33,7 @@ const Page = () => {
           headers: {
             'Content-Type': 'application/json', // Headers
           },
+          withCredentials: true // Ensuring cookies are sent and received
         }
       );
   
