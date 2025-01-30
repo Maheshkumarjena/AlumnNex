@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useSelector } from 'react-redux';
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import OAuthButton from "@components/OAuth";
 
 
 const Page = () => {
@@ -163,6 +164,7 @@ const Page = () => {
               </span>
             </div>
           </form>
+          <OAuthButton/>
           {message && (
             <div className={`mt-4 text-center ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>
               {message}

@@ -7,12 +7,13 @@ import { useSelector } from 'react-redux';
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { set } from "mongoose";
+import OAuthButton from "@components/OAuth";
 
 const Page = () => {
   const theme = useSelector((state) => state.theme);
+  const isDarkMode = theme === 'dark';
   const router = useRouter();
 
-  const isDarkMode = theme === 'dark';
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -135,6 +136,8 @@ const Page = () => {
               </span>
             </div>
           </form>
+                    <OAuthButton/>
+          
           {message && (
             <div className={`mt-4 text-center ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>
               {message}

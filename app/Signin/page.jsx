@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useDispatch,useSelector } from 'react-redux'; // Use 'useSelector' correctly
 import { useRouter } from "next/navigation";
 import { signInFailure,signInStart,signInSuccess } from "@store/features/user/userSlice";
-
+import OAuthButton from "@components/OAuth";
 
 const Page = () => {
   const theme = useSelector((state) => state.theme); 
@@ -148,28 +148,10 @@ const Page = () => {
                   <span className={`px-2 ${isDarkMode ? 'text-gray-400' : 'text-black'}`}>Or continue with</span>
                 </div>
               </div>
-
-              <div className="mt-6 grid grid-cols-3 gap-3">
-                <div>
-                  <Link href='#' className={`w-full flex items-center justify-center px-8 py-3 border ${isDarkMode ? 'border-gray-600' : 'border-gray-300'} rounded-md shadow-sm text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-700'} glassmorphism hover:bg-gray-50`}>
-                    <img className="h-5 w-5" src="https://www.svgrepo.com/show/512120/facebook-176.svg" alt="Facebook" />
-                  </Link>
-                </div>
-
-                <div>
-                  <Link href='#' className={`w-full flex items-center justify-center px-8 py-3 border ${isDarkMode ? 'border-gray-600' : 'border-gray-300'} rounded-md shadow-sm text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-700'} glassmorphism hover:bg-gray-50`}>
-                    <img className="h-5 w-5" src="https://www.svgrepo.com/show/513008/twitter-154.svg" alt="Twitter" />
-                  </Link>
-                </div>
-
-                <div>
-                  <Link href="#" className={`w-full flex items-center justify-center px-8 py-3 border ${isDarkMode ? 'border-gray-600' : 'border-gray-300'} rounded-md shadow-sm text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-700'} glassmorphism hover:bg-gray-50`}>
-                    <img className="h-6 w-6" src="https://www.svgrepo.com/show/506498/google.svg" alt="Google" />
-                  </Link>
-                </div>
-              </div>
             </div>
-            
+
+            <OAuthButton/>
+
             {message && (
             <div className={`mt-4 text-center ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>
               {message}
