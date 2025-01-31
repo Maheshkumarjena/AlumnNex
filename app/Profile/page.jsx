@@ -6,9 +6,37 @@ import CreatePost from "@components/profile/CreatePost";
 import Post from "@components/profile/Post";
 import AboutSection from "@components/profile/AboutSection";
 import StatsBar from "@components/profile/StatsBar";
+import Posts from "@components/profile/MultiplePosts";
 import { useSelector } from "react-redux";
 import { getCurrentUser } from "@utils/authUtils";
+
 import axios from "axios";
+
+const posts = [
+  {
+    id: 1,
+    user: {
+      username: 'john_doe',
+      profilePicture: '/profile.jpg',
+    },
+    content: 'Just finished my final project for the semester! 🎉 #StudentLife',
+    media: 'https://via.placeholder.com/600x300',
+    likes: 10,
+    comments: [
+      {
+        user: {
+          username: 'jane_doe',
+          profilePicture: '/profile2.jpg',
+        },
+        content: 'Great job!',
+      },
+    ],
+    timestamp: '2 hours ago',
+    isAuthor: true,
+    isLiked: false,
+  },
+  // Add more posts here
+];
 
 const ProfilePage = () => {
   const theme = useSelector((state) => state.theme);
@@ -51,7 +79,7 @@ const ProfilePage = () => {
         <NavigationTabs />
         <div className="mt-6">
           <CreatePost />
-          <Post user={user} /> {/* Pass user data to Post component */}
+          <Posts post={posts}/>
         </div>
         <AboutSection user={user} />
       </div>

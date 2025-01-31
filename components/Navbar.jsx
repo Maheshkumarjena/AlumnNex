@@ -115,7 +115,7 @@ const Navbar = () => {
                     } hover:${theme === "light" ? "bg-gray-900" : ""} focus:ring-2 font-medium rounded-lg text-sm px-2 sm:px-4 lg:px-4 py-[1vw] md:py-1.5 sm:mr-2 lg:mr-0`}
                 >
                   <Image
-                    src={user.profilePicture || "/default-profile.png"} 
+                    src={user.profilePicture || "/default-profile.png"}
                     alt="Profile Picture"
                     width={25}
                     height={25}
