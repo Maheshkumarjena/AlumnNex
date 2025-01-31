@@ -9,39 +9,29 @@ import AlumniCard from "./AlumniCard";
 import { logout } from "@store/features/user/userSlice";
 import axios from "axios";
 import { getCurrentUser } from "@utils/authUtils";
-
-
+import Image from "next/image"; // Correct import
 
 const Navbar = () => {
-
   const dispatch = useDispatch();
   const loggedIn = useSelector((state) => state.user.loggedIn);
   let user = null;
-  if (typeof window !== 'undefined') {
-     user = getCurrentUser();
+  if (typeof window !== "undefined") {
+    user = getCurrentUser();
   }
-  console.log("user=>>>>>>>>", user)
-  // state.user.users[0]: Retrieves the first user in the users array from the store.
   const theme = useSelector((state) => state.theme);
 
-
   useEffect(() => {
-
     const fetchUser = async () => {
-      console.log("fetch user called")
       try {
-        const response = await axios.get('http://localhost:5000/api/users/getProfile', {
-          withCredentials: true, // Include cookies
+        const response = await axios.get("http://localhost:5000/api/users/getProfile", {
+          withCredentials: true,
         });
-        console.log(response.data);
-        console.log("data after authentication")
         if (response.data.status) {
-          console.log(response.data.user);
-          dispatch(login(response.data.user)); // Dispatch login action with user data
+          dispatch(login(response.data.user));
         }
       } catch (err) {
-        console.error('Verification failed  :', err.message);
-        dispatch(logout()); // Dispatch logout action in case of error
+        console.error("Verification failed:", err.message);
+        dispatch(logout());
       }
     };
 
@@ -50,26 +40,18 @@ const Navbar = () => {
   }, [dispatch]);
 
   useEffect(() => {
-
     return () => {
       document.documentElement.classList.add(theme === "dark" ? "dark" : "light");
     };
   }, [theme]);
 
-
-
   const handleThemeToggle = () => {
-    dispatch(toggleTheme()); // This will update the theme in the store and localStorage
+    dispatch(toggleTheme());
     document.documentElement.classList.toggle("dark", theme === "light");
   };
 
-
-
   const handleBurgerClick = () => {
-
-    console.log("handle burger click");
     const menu = document.querySelector(".ulElement");
-    console.log(menu);
     menu.classList.toggle("addAnimation");
     menu.classList.toggle("removeAnimation");
     document.querySelector(".cross").classList.toggle("hidden");
@@ -83,17 +65,16 @@ const Navbar = () => {
     }
   };
 
-
   return (
-    <div className="overflow-x-hidden sticky top-0 ">
+    <div className="overflow-x-hidden sticky top-0">
       <nav
         className={`navbar ${theme === "light"
-            ? "bg-white border-gray-200"
-            : "bg-gray-900 border-gray-800"
+          ? "bg-white border-gray-200"
+          : "bg-gray-900 border-gray-800"
           } w-[100vw] py-2.5 ${theme === "light" ? "text-gray-900" : "text-white"
           }`}
       >
-        <div className="flex flex-wrap items-center justify-between max-w-[1500px] px-[3px] md:px-4  mx-auto">
+        <div className="flex flex-wrap items-center justify-between max-w-[1500px] px-[3px] md:px-4 mx-auto">
           <Link href="#" className="z-50 flex items-center">
             <img
               src="./assets/Images/logo.png"
@@ -101,7 +82,6 @@ const Navbar = () => {
               alt="AlumNexus Logo"
             />
             <span
-              z-50
               className={`self-center hidden xsm:flex text-xl font-semibold whitespace-nowrap ${theme === "light" ? "text-gray-900" : "text-white"
                 }`}
             >
@@ -111,12 +91,12 @@ const Navbar = () => {
 
           <div className="flex items-center lg:order-2">
             <div
-              className={` px-[2vw] flex justify-center items-center ${theme === "dark" ? "dark:bg-gray-900" : "bg-white"
+              className={`px-[2vw] flex justify-center items-center ${theme === "dark" ? "dark:bg-gray-900" : "bg-white"
                 }`}
             >
               <button
                 onClick={handleThemeToggle}
-                className={` rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center`}
+                className={`rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center`}
               >
                 <FontAwesomeIcon
                   icon={theme === "dark" ? faSun : faMoon}
@@ -127,25 +107,26 @@ const Navbar = () => {
               </button>
             </div>
 
-            {/* signUP */}
+            {loggedIn && user ? (
+              <div>
+                <Link
+                  href="/Profile"
+                  className={`flex rounded-[20px] text-white ${theme === "light" ? "text-white" : "text-white"
+                    } hover:${theme === "light" ? "bg-gray-900" : ""} focus:ring-2 font-medium rounded-lg text-sm px-2 sm:px-4 lg:px-4 py-[1vw] md:py-1.5 sm:mr-2 lg:mr-0`}
+                >
+                  <Image
+                    src={user.profilePicture || "/default-profile.png"} // Fallback image
+                    alt="Profile Picture"
+                    width={25}
+                    height={25}
+                    priority
+                    className="rounded-full sm:mx-2"
 
-            {loggedIn ? 
-            <div>
-              <Link
-                href="/Signup"
-                className={` flex rounded-[20px] text-white ${theme === "light" ? "text-white" : " text-white"
-                  } hover:${theme === "light" ? "bg-gray-900" : ""} focus:ring-2 font-medium rounded-lg text-sm px-2 sm:px-4 lg:px-4 py-[1vw] md:py-1.5 sm:mr-2 lg:mr-0 `}
-              >
-                <p>
-                  <FontAwesomeIcon
-                    icon={faUser}
-                    className=" sm:mr-2 md:mr-3 h-[13px] w-[13px]"
-                  />{" "}
-                </p>
-                <p className="hidden sm:flex">{user.username}</p>
-              </Link>
-
-            </div> : (
+                  />
+                  <p className="hidden sm:flex">{user.username || "User"}</p>
+                </Link>
+              </div>
+            ) : (
               <div className="flex flex-row">
                 <Link
                   href="/Signup"
@@ -175,15 +156,13 @@ const Navbar = () => {
                   <p>Signin</p>
                 </Link>
               </div>
-            )
-            }
-
+            )}
 
             <button
-              onClick={() => handleBurgerClick()}
+              onClick={handleBurgerClick}
               data-collapse-toggle="mobile-menu-2"
               type="button"
-              className="inline-flex items-center p-2 ml-1 text-sm rounded-[200px] lg:hidden hover:bg-gray-100  dark:hover:bg-gray-900 focus:outline-none"
+              className="inline-flex items-center p-2 ml-1 text-sm rounded-[200px] lg:hidden hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none"
             >
               <span className="sr-only">Open main menu</span>
               <svg
@@ -212,23 +191,22 @@ const Navbar = () => {
               </svg>
             </button>
           </div>
+
           <div
             className="items-center justify-between w-full lg:flex lg:w-auto lg:order-1"
             id="mobile-menu-2"
           >
             <ul
-              onClick={() => {
-                handleBurgerClick();
-              }}
-              className={`ulElement  flex hidden lg:flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0  removeAnimation ${theme === "light" ? "text-gray-900" : "text-white"
+              onClick={handleBurgerClick}
+              className={`ulElement flex hidden lg:flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0 removeAnimation ${theme === "light" ? "text-gray-900" : "text-white"
                 }`}
             >
               <li>
                 <Link
                   href="/"
                   className={`block py-2 pl-3 pr-4 ${theme === "light"
-                      ? "text-gray-900 border-b border-gray-100 hover:bg-[#F8F8F8] "
-                      : "text-white border-gray-800 hover:bg-gray-700"
+                    ? "text-gray-900 border-b border-gray-100 hover:bg-[#F8F8F8] "
+                    : "text-white border-gray-800 hover:bg-gray-700"
                     } hover:bg-[#F8F8F8] lg:hover:bg-transparent lg:border-0 lg:hover:text-blue-400 lg:p-0`}
                 >
                   Home
@@ -238,8 +216,8 @@ const Navbar = () => {
                 <Link
                   href="About"
                   className={`block py-2 pl-3 pr-4 ${theme === "light"
-                      ? "text-gray-900 border-b border-gray-100 hover:bg-[#F8F8F8] "
-                      : "text-white border-gray-800 hover:bg-gray-700"
+                    ? "text-gray-900 border-b border-gray-100 hover:bg-[#F8F8F8] "
+                    : "text-white border-gray-800 hover:bg-gray-700"
                     } hover:bg-[#F8F8F8] lg:hover:bg-transparent lg:border-0 lg:hover:text-blue-400 lg:p-0`}
                 >
                   About
@@ -249,20 +227,19 @@ const Navbar = () => {
                 <Link
                   href="Alumni"
                   className={`block py-2 pl-3 pr-4 ${theme === "light"
-                      ? "text-gray-900 border-b border-gray-100 hover:bg-[#F8F8F8] "
-                      : "text-white border-gray-800 hover:bg-gray-700"
+                    ? "text-gray-900 border-b border-gray-100 hover:bg-[#F8F8F8] "
+                    : "text-white border-gray-800 hover:bg-gray-700"
                     } hover:bg-[#F8F8F8] lg:hover:bg-transparent lg:border-0 lg:hover:text-blue-400 lg:p-0`}
                 >
                   Alumni
                 </Link>
               </li>
-
               <li>
                 <Link
                   href="Events"
                   className={`block py-2 pl-3 pr-4 ${theme === "light"
-                      ? "text-gray-900 border-b border-gray-100 hover:bg-[#F8F8F8] "
-                      : "text-white border-gray-800 hover:bg-gray-700"
+                    ? "text-gray-900 border-b border-gray-100 hover:bg-[#F8F8F8] "
+                    : "text-white border-gray-800 hover:bg-gray-700"
                     } hover:bg-[#F8F8F8] lg:hover:bg-transparent lg:border-0 lg:hover:text-blue-400 lg:p-0`}
                 >
                   Events
@@ -272,33 +249,32 @@ const Navbar = () => {
                 <Link
                   href="Resources"
                   className={`block py-2 pl-3 pr-4 ${theme === "light"
-                      ? "text-gray-900 border-b border-gray-100 hover:bg-[#F8F8F8] "
-                      : "text-white border-gray-800 hover:bg-gray-700"
+                    ? "text-gray-900 border-b border-gray-100 hover:bg-[#F8F8F8] "
+                    : "text-white border-gray-800 hover:bg-gray-700"
                     } hover:bg-[#F8F8F8] lg:hover:bg-transparent lg:border-0 lg:hover:text-blue-400 lg:p-0`}
                 >
                   Resources
                 </Link>
               </li>
-              {/* Signup */}
-              
-              {loggedIn ? "" :
-              (<li>
-                <Link
-                  href="/Signup"
-                  className={` black_btn  flex sm:hidden  hover:text-white  rounded-[20px] text-white ${theme === "light" ? " text-white" : "bg-blue-700 text-white"
-                    } hover:${theme === "light" ? "bg-gray-900" : "bg-blue-700"
-                    } focus:ring-2  font-medium rounded-lg text-sm px-2 sm:px-4  lg:px-4 py-[1vw] md:py-1.5 sm:mr-2 lg:mr-0 focus:outline-none mx-3  `}
-                >
-                  <p>
-                    <FontAwesomeIcon
-                      icon={faUser}
-                      className="mr-1 sm:mr-2 md:mr-3 h-[13px] w-[13px]"
-                    />{" "}
-                  </p>
-                  <p>Signup</p>
-                </Link>
-              </li>) 
-}
+
+              {!loggedIn && (
+                <li>
+                  <Link
+                    href="/Signup"
+                    className={`black_btn flex sm:hidden hover:text-white rounded-[20px] text-white ${theme === "light" ? "text-white" : "bg-blue-700 text-white"
+                      } hover:${theme === "light" ? "bg-gray-900" : "bg-blue-700"
+                      } focus:ring-2 font-medium rounded-lg text-sm px-2 sm:px-4 lg:px-4 py-[1vw] md:py-1.5 sm:mr-2 lg:mr-0 focus:outline-none mx-3`}
+                  >
+                    <p>
+                      <FontAwesomeIcon
+                        icon={faUser}
+                        className="mr-1 sm:mr-2 md:mr-3 h-[13px] w-[13px]"
+                      />{" "}
+                    </p>
+                    <p>Signup</p>
+                  </Link>
+                </li>
+              )}
             </ul>
           </div>
         </div>
