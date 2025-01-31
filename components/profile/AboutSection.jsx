@@ -1,7 +1,7 @@
 "use client";
 import { useSelector } from "react-redux";
 
-const AboutSection = () => {
+const AboutSection = ({ user }) => {
   const theme = useSelector((state) => state.theme);
   const isDarkMode = theme === "dark";
 
@@ -11,10 +11,10 @@ const AboutSection = () => {
         About
       </h2>
       <div className={`mt-4 space-y-2 ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}>
-        <p><strong>Education:</strong> XYZ University, B.Sc. Computer Science (Class of 2022)</p>
-        <p><strong>Work Experience:</strong> Software Intern at ABC Corp (Summer 2021)</p>
-        <p><strong>Skills:</strong> Python, Java, Data Analysis, Team Leadership</p>
-        <p><strong>Interests:</strong> Machine Learning, Open Source Projects, Traveling</p>
+        <p><strong>Education:</strong> {user.education || "Not specified"}</p>
+        <p><strong>Work Experience:</strong> {user.workExperience || "Not specified"}</p>
+        <p><strong>Skills:</strong> {user.skills || "Not specified"}</p>
+        <p><strong>Interests:</strong> {user.interests || "Not specified"}</p>
       </div>
     </div>
   );

@@ -1,7 +1,8 @@
 "use client";
 import { useSelector } from "react-redux";
+import Image from "next/image";
 
-const Post = () => {
+const Post = ({ user }) => {
   const theme = useSelector((state) => state.theme);
   const isDarkMode = theme === "dark";
 
@@ -10,14 +11,17 @@ const Post = () => {
       isDarkMode ? "bg-gray-800" : "bg-white"
     }`}>
       <div className="flex items-center space-x-4">
-        <img
-          src="https://via.placeholder.com/40"
-          alt="User"
+        {/* Post Author */}
+        <Image
+          src={user?.profilePicture || "/default-profile.png"} // Fallback image
+          alt="Profile Picture"
+          width={40}
+          height={40}
           className="w-10 h-10 rounded-full"
         />
         <div>
           <p className={`font-bold ${isDarkMode ? "text-white" : "text-gray-900"}`}>
-            John Doe
+            {user?.username || "User"}
           </p>
           <p className={`text-gray-600 text-sm ${
             isDarkMode ? "text-gray-300" : "text-gray-600"
@@ -26,14 +30,19 @@ const Post = () => {
           </p>
         </div>
       </div>
+      {/* Post Content */}
       <p className={`mt-4 ${isDarkMode ? "text-white" : "text-gray-900"}`}>
         Just finished my final project for the semester! 🎉 #StudentLife
       </p>
-      <img
+      {/* Post Image */}
+      <Image
         src="https://via.placeholder.com/600x300"
         alt="Post"
+        width={600}
+        height={300}
         className="mt-4 rounded-lg"
       />
+      {/* Post Actions */}
       <div className="mt-4 flex space-x-4">
         <button className={`text-gray-600 hover:text-blue-500 ${
           isDarkMode ? "text-gray-300" : "text-gray-600"

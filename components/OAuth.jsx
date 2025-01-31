@@ -58,7 +58,9 @@ export default function OAuthButton() {
             const res = await axios.post('http://localhost:5000/api/auth/google', {
                 ...userInfo, // send user info from state
                 accountType,
-            });
+            },{
+                withCredentials: true,
+              });
 
             const data = await res.data;
             console.log("Successfully logged in with Google:", data);
