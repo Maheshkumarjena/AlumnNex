@@ -21,7 +21,6 @@ const CreatePost = () => {
     user = getCurrentUser();
   }
 
-  console.log("user from the frontend:", user);
 
   // Handle media file upload
   const handleMediaUpload = (e) => {
