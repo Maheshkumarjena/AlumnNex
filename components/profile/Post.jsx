@@ -1,11 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart, faComment, faShare, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
-
-
+import axios from "axios";
 
 const Post = ({ post, onDelete, onEdit }) => {
   const theme = useSelector((state) => state.theme);
@@ -18,6 +17,31 @@ const Post = ({ post, onDelete, onEdit }) => {
   const [editedContent, setEditedContent] = useState(post.content);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+
+  const [user, setUser] = useState(null);
+
+  // Fetch user details when the component mounts
+  useEffect( async () => {
+    const fetchUser = async () => {
+      console.log("fetch request of user ", post.userId)
+      try {
+        const response = await axios.post(`http://localhost:5000/api/users/getUserdata`,{
+          userId:post.userId
+        });
+        if (response.data.status) {
+            setUser(response.data);
+        }
+      } catch (err) {
+        setError("Failed to fetch user details.");
+      }
+    };
+
+
+    await fetchUser();
+  }, [post.userId]);
+
+  console.log('user fetched ',user)
 
   // Handle like/unlike
   const handleLike = async () => {
@@ -97,7 +121,7 @@ const Post = ({ post, onDelete, onEdit }) => {
       {/* Post Author */}
       <div className="flex items-center space-x-4">
         <Image
-          src={post.user.profilePicture || "/default-profile.png"}
+          src={user?.profilePicture || "/default-profile.png"}
           alt="Profile Picture"
           width={40}
           height={40}
@@ -105,7 +129,7 @@ const Post = ({ post, onDelete, onEdit }) => {
         />
         <div>
           <p className={`font-bold ${isDarkMode ? "text-white" : "text-gray-900"}`}>
-            {post.user.username || "User"}
+            {user?.username || "User"}
           </p>
           <p className={`text-gray-600 text-sm ${
             isDarkMode ? "text-gray-300" : "text-gray-600"
