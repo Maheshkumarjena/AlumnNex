@@ -16,30 +16,44 @@ const CreatePost = () => {
   const [isLoading, setIsLoading] = useState(false); // Loading state
   const [error, setError] = useState(""); // Error message
 
-
   let user = null;
-    if (typeof window !== "undefined") {
-      user = getCurrentUser();
-    }
+  if (typeof window !== "undefined") {
+    user = getCurrentUser();
+  }
+
+  console.log("user from the frontend:", user);
 
   // Handle media file upload
   const handleMediaUpload = (e) => {
     const files = e.target.files;
     if (files.length > 0) {
-      const newMediaFiles = Array.from(files);
-      setMediaFiles((prev) => [...prev, ...newMediaFiles]);
-
-      // Create preview URLs for the uploaded files
-      const newMediaPreviews = newMediaFiles.map((file) => ({
-        url: URL.createObjectURL(file),
-        type: file.type.startsWith("image") ? "image" : "video", // Determine file type
-      }));
-      setMediaPreviews((prev) => [...prev, ...newMediaPreviews]);
+      const validFiles = Array.from(files).filter((file) => {
+        const isValidType = file.type.startsWith("image/") || file.type.startsWith("video/");
+        if (!isValidType) {
+          console.warn(`Unsupported file type: ${file.name}`);
+          return false;
+        }
+        return true;
+      });
+  
+      if (validFiles.length > 0) {
+        setMediaFiles((prev) => [...prev, ...validFiles]);
+  
+        // Create preview URLs for the uploaded files
+        const newMediaPreviews = validFiles.map((file) => ({
+          url: URL.createObjectURL(file),
+          type: file.type.startsWith("image") ? "image" : "video",
+        }));
+        setMediaPreviews((prev) => [...prev, ...newMediaPreviews]);
+      } else {
+        setError("Please upload only images or videos.");
+      }
     }
   };
 
   // Remove a media file
   const handleRemoveMedia = (index) => {
+    URL.revokeObjectURL(mediaPreviews[index].url); // Free up memory
     setMediaFiles((prev) => prev.filter((_, i) => i !== index));
     setMediaPreviews((prev) => prev.filter((_, i) => i !== index));
   };
@@ -50,29 +64,35 @@ const CreatePost = () => {
       setError("Please add some content or media to your post.");
       return;
     }
-
+  
     setIsLoading(true);
     setError("");
-
+  
     try {
       const formData = new FormData();
-
+  
       // Append post content
       formData.append("content", postContent);
-
+      formData.append("_id", user._id);
+  
       // Append media files
-      const media = mediaFiles.map((file) => file.name);
-
+      mediaFiles.forEach((file) => {
+        formData.append("files", file); // Ensure this matches the backend field name
+      });
+  
       // Log FormData for debugging
       for (let [key, value] of formData.entries()) {
         console.log(key, value);
       }
-      console.log("formdata", postContent, media);  
+  
       // Example API call to submit the post
-      const response = await axios.post("http://localhost:5000/api/posts/upload", {content:postContent,media:media,_id:user._id}, {
+      const response = await axios.post("http://localhost:5000/api/posts/upload", formData, {
         withCredentials: true, // Include cookies if needed
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
-
+  
       if (response) {
         console.log("Post created successfully:", response.data);
         // Clear the form after successful submission
@@ -83,22 +103,26 @@ const CreatePost = () => {
         setError("Failed to create post. Please try again.");
       }
     } catch (err) {
-      console.error("Error creating post:", err.message);
-      setError("An error occurred while creating the post.");
+      console.error("Error creating post:", err);
+      setError(
+        err.response?.data?.message || "An error occurred while creating the post."
+      );
     } finally {
       setIsLoading(false);
     }
   };
-
   return (
-    <div className={`bg-gray-50 p-4 rounded-lg ${
-      isDarkMode ? "bg-gray-800" : "bg-gray-100"
-    }`}>
+    <div
+      className={`bg-gray-50 p-4 rounded-lg ${
+        isDarkMode ? "bg-gray-800" : "bg-gray-100"
+      }`}
+    >
       {/* Textarea for post content */}
       <textarea
         placeholder="What's on your mind?"
         value={postContent}
         onChange={(e) => setPostContent(e.target.value)}
+        disabled={isLoading}
         className={`w-full p-2 rounded-lg border ${
           isDarkMode ? "border-gray-700" : "border-gray-300"
         } placeholder-gray-500 ${
@@ -111,9 +135,12 @@ const CreatePost = () => {
       <div className="mt-4">
         <label
           htmlFor="media-upload"
+          aria-label="Upload media"
           className={`cursor-pointer inline-block px-4 py-2 rounded-lg ${
             isDarkMode ? "bg-gray-700 text-white" : "bg-gray-200 text-gray-900"
-          } hover:${isDarkMode ? "bg-gray-600" : "bg-gray-300"}`}
+          } hover:${isDarkMode ? "bg-gray-600" : "bg-gray-300"} ${
+            isLoading ? "opacity-50 cursor-not-allowed" : ""
+          }`}
         >
           Upload Media
         </label>
@@ -124,6 +151,7 @@ const CreatePost = () => {
           multiple
           onChange={handleMediaUpload}
           className="hidden"
+          disabled={isLoading}
         />
       </div>
 
@@ -160,7 +188,11 @@ const CreatePost = () => {
 
       {/* Error Message */}
       {error && (
-        <p className={`mt-4 text-sm ${isDarkMode ? "text-red-400" : "text-red-600"}`}>
+        <p
+          className={`mt-4 text-sm ${
+            isDarkMode ? "text-red-400" : "text-red-600"
+          }`}
+        >
           {error}
         </p>
       )}
