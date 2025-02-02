@@ -28,6 +28,7 @@ export default function OAuthButton() {
                 username: result.user.displayName,
                 email: result.user.email,
                 photoURL: result.user.photoURL,
+                _id: result.user.uid,
             });
 
             // Show account type selection modal
@@ -64,7 +65,7 @@ export default function OAuthButton() {
 
             const data = await res.data;
             console.log("Successfully logged in with Google:", data);
-            dispatch(signInSuccess(data.user));
+            dispatch(signInSuccess({username:data.user.username,email:data.user.email , dob:data.user?.dob || ' ',userType:data.user?.userType || ' ', profilePicture:data.user?.profilePicture || " ", id:data.user._id}));
 
             // Mark as submitted after successful submission
             setIsSubmitted(true); 

@@ -21,56 +21,42 @@ const ProfilePage = () => {
 
   // Fetch user data and posts
   useEffect(() => {
-    const fetchUser = async () => {
+    // Define the async function inside the useEffect
+    const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/users/getProfile", {
+        // Fetch user data
+        const userResponse = await axios.get("http://localhost:5000/api/users/getProfile", {
           withCredentials: true,
         });
-        if (response.data) {
-          console.log("user id",response.data._id)
-          setUser(response.data); // Set user data
-          return response.data._id; // Return user ID for fetching posts
+
+        if (userResponse.data) {
+          setUser(userResponse.data); // Set user data
+          const userId = userResponse.data._id;
+
+          // Fetch posts using the user ID
+          const postsResponse = await axios.post(
+            "http://localhost:5000/api/posts/getPosts",
+            { _id: userId },
+            { withCredentials: true }
+          );
+
+          if (postsResponse.data) {
+            setPosts(postsResponse.data.data);
+          } else {
+            setError(postsResponse.data.message || "Failed to retrieve posts.");
+          }
         }
       } catch (err) {
-        console.error("Failed to fetch user data:", err.message);
-        setError("Failed to fetch user data. Please try again later.");
-        setLoading(false);
-      }
-    };
-
-    const fetchPosts = async (userId) => {
-      console.log('entered inside fetch post')
-      try {
-        const response = await axios.post("http://localhost:5000/api/posts/getPosts", { _id: userId },
-          {
-            withCredentials: true,
-          }
-        );
-        console.log(response.data.data)
-        if (response.data) {
-          setPosts(response.data.data);
-        } else {
-          setError(response.data.message || "Failed to retrieve posts.");
-        }
-      } catch (error) {
-        console.error("Error retrieving posts:", error);
-        setError("Failed to retrieve posts. Please try again later.");
+        console.error("Failed to fetch data:", err.message);
+        setError("Failed to fetch data. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
 
-    const fetchData = async () => {
-      const userId = await fetchUser();
-      if (userId) {
-        await fetchPosts(userId);
-      } else {
-        setLoading(false);
-      }
-    };
-
+    // Call the async function
     fetchData();
-  }, []);
+  }, []); // Empty dependency array ensures this runs only once on mount
 
   if (loading) {
     return <div>Loading...</div>; // Show loading state while fetching data
@@ -93,7 +79,7 @@ const ProfilePage = () => {
         <NavigationTabs />
         <div className="mt-6">
           <CreatePost />
-          <Posts posts={posts} /> {/* Pass posts data to the Posts component */}
+          <Posts posts={posts} userProfile={user} /> {/* Pass posts data to the Posts component */}
         </div>
         <AboutSection user={user} />
       </div>

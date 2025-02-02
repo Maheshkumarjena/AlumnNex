@@ -1,12 +1,12 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import Image from "next/image";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart, faComment, faShare, faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
+import PostActions from "@components/PostActions";
+import PostMenu from "@components/PostMenu";
 
-const Post = ({ post, onDelete, onEdit }) => {
+const Post = ({ post, onDelete, onEdit, userProfile }) => {
   const theme = useSelector((state) => state.theme);
   const isDarkMode = theme === "dark";
   const [isLiked, setIsLiked] = useState(post.isLiked || false);
@@ -18,32 +18,6 @@ const Post = ({ post, onDelete, onEdit }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-
-  const [user, setUser] = useState(null);
-
-  // Fetch user details when the component mounts
-  useEffect( async () => {
-    const fetchUser = async () => {
-      console.log("fetch request of user ", post.userId)
-      try {
-        const response = await axios.post(`http://localhost:5000/api/users/getUserdata`,{
-          userId:post.userId
-        });
-        if (response.data.status) {
-            setUser(response.data);
-        }
-      } catch (err) {
-        setError("Failed to fetch user details.");
-      }
-    };
-
-
-    await fetchUser();
-  }, [post.userId]);
-
-  console.log('user fetched ',user)
-
-  // Handle like/unlike
   const handleLike = async () => {
     try {
       setIsLoading(true);
@@ -61,10 +35,8 @@ const Post = ({ post, onDelete, onEdit }) => {
     }
   };
 
-  // Handle comment submission
   const handleComment = async () => {
     if (!newComment.trim()) return;
-
     try {
       setIsLoading(true);
       const response = await axios.post(`/api/posts/${post.id}/comment`, {
@@ -81,7 +53,6 @@ const Post = ({ post, onDelete, onEdit }) => {
     }
   };
 
-  // Handle post edit
   const handleEdit = async () => {
     try {
       setIsLoading(true);
@@ -90,7 +61,7 @@ const Post = ({ post, onDelete, onEdit }) => {
       });
       if (response.data.status) {
         setIsEditing(false);
-        onEdit(post.id, editedContent); // Update post content in parent component
+        onEdit(post.id, editedContent);
       }
     } catch (err) {
       setError("Failed to edit post. Please try again.");
@@ -99,13 +70,12 @@ const Post = ({ post, onDelete, onEdit }) => {
     }
   };
 
-  // Handle post deletion
   const handleDelete = async () => {
     try {
       setIsLoading(true);
       const response = await axios.delete(`/api/posts/${post.id}`);
       if (response.data.status) {
-        onDelete(post.id); // Remove post from parent component
+        onDelete(post.id);
       }
     } catch (err) {
       setError("Failed to delete post. Please try again.");
@@ -114,29 +84,44 @@ const Post = ({ post, onDelete, onEdit }) => {
     }
   };
 
+  const handleSave = () => {
+    // Implement save functionality
+    console.log("Post saved");
+  };
+
+  const handleArchive = () => {
+    // Implement archive functionality
+    console.log("Post archived");
+  };
+
   return (
-    <div className={`mt-6 p-4 rounded-lg shadow-md ${
-      isDarkMode ? "bg-gray-800" : "bg-white"
-    }`}>
-      {/* Post Author */}
-      <div className="flex items-center space-x-4">
-        <Image
-          src={user?.profilePicture || "/default-profile.png"}
-          alt="Profile Picture"
-          width={40}
-          height={40}
-          className="w-10 h-10 rounded-full"
-        />
-        <div>
-          <p className={`font-bold ${isDarkMode ? "text-white" : "text-gray-900"}`}>
-            {user?.username || "User"}
-          </p>
-          <p className={`text-gray-600 text-sm ${
-            isDarkMode ? "text-gray-300" : "text-gray-600"
-          }`}>
-            {post.timestamp} {/* Dynamic timestamp */}
-          </p>
+    <div className={`mt-6 p-4 rounded-lg shadow-md ${isDarkMode ? "bg-gray-800" : "bg-white"}`}>
+      {/* Post Header */}
+      <div className="flex justify-between items-center">
+        <div className="flex items-center space-x-4">
+          <Image
+            src={userProfile?.profilePicture || "/default-profile.png"}
+            alt="Profile Picture"
+            width={40}
+            height={40}
+            className="w-10 h-10 rounded-full"
+          />
+          <div>
+            <p className={`font-bold ${isDarkMode ? "text-white" : "text-gray-900"}`}>
+              {userProfile?.username || "User"}
+            </p>
+            <p className={`text-sm ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
+              {post.timestamp}
+            </p>
+          </div>
         </div>
+        <PostMenu
+          isDarkMode={isDarkMode}
+          onEdit={() => setIsEditing(!isEditing)}
+          onDelete={handleDelete}
+          onSave={handleSave}
+          onArchive={handleArchive}
+        />
       </div>
 
       {/* Post Content */}
@@ -144,11 +129,9 @@ const Post = ({ post, onDelete, onEdit }) => {
         <textarea
           value={editedContent}
           onChange={(e) => setEditedContent(e.target.value)}
-          className={`w-full p-2 mt-4 rounded-lg border ${
-            isDarkMode ? "border-gray-700" : "border-gray-300"
-          } placeholder-gray-500 ${
-            isDarkMode ? "text-white" : "text-gray-900"
-          } focus:outline-none focus:ring-blue-500 focus:border-black focus:z-10 sm:text-sm bg-transparent`}
+          className={`w-full p-2 mt-4 rounded-lg border ${isDarkMode ? "border-gray-700" : "border-gray-300"
+            } placeholder-gray-500 ${isDarkMode ? "text-white" : "text-gray-900"
+            } focus:outline-none focus:ring-blue-500 focus:border-black focus:z-10 sm:text-sm bg-transparent`}
           rows="3"
         />
       ) : (
@@ -157,67 +140,38 @@ const Post = ({ post, onDelete, onEdit }) => {
         </p>
       )}
 
-      {/* Post Media */}
-      {post.media && (
+{post.media && post.media.length > 0 && (
+  <div className="mt-4 grid grid-cols-2 md:grid-cols-2 gap-2 max-h-80  md:max-h-100 overflow-hidden relative">
+    {post.media.slice(0, 3).map((media, index) => (
+      <div key={index} className="relative w-full h-32 md:h-50 ">
         <Image
-          src={post.media}
+          src={media || "/default-profile.png"}
           alt="Post Media"
-          width={600}
-          height={300}
-          className="mt-4 rounded-lg"
+          layout="fill"
+          objectFit="cover"
+          className="rounded-lg md:w-[50vw] "
         />
-      )}
+      </div>
+    ))}
+    {post.media.length > 3 && (
+      <div className="relative w-full h-32 md:h-40 flex items-center justify-center bg-black bg-opacity-50 rounded-lg cursor-pointer">
+        <p className="text-white font-bold">+{post.media.length - 3} More</p>
+      </div>
+    )}
+  </div>
+)}
+
 
       {/* Post Actions */}
-      <div className="mt-4 flex space-x-4">
-        <button
-          onClick={handleLike}
-          className={`flex items-center space-x-2 ${
-            isDarkMode ? "text-gray-300" : "text-gray-600"
-          } hover:text-blue-500`}
-        >
-          <FontAwesomeIcon icon={faHeart} className={isLiked ? "text-red-500" : ""} />
-          <span>{likes}</span>
-        </button>
-        <button
-          className={`flex items-center space-x-2 ${
-            isDarkMode ? "text-gray-300" : "text-gray-600"
-          } hover:text-blue-500`}
-        >
-          <FontAwesomeIcon icon={faComment} />
-          <span>{comments.length}</span>
-        </button>
-        <button
-          className={`flex items-center space-x-2 ${
-            isDarkMode ? "text-gray-300" : "text-gray-600"
-          } hover:text-blue-500`}
-        >
-          <FontAwesomeIcon icon={faShare} />
-          <span>Share</span>
-        </button>
-        {post.isAuthor && (
-          <>
-            <button
-              onClick={() => setIsEditing(!isEditing)}
-              className={`flex items-center space-x-2 ${
-                isDarkMode ? "text-gray-300" : "text-gray-600"
-              } hover:text-blue-500`}
-            >
-              <FontAwesomeIcon icon={faEdit} />
-              <span>{isEditing ? "Cancel" : "Edit"}</span>
-            </button>
-            <button
-              onClick={handleDelete}
-              className={`flex items-center space-x-2 ${
-                isDarkMode ? "text-gray-300" : "text-gray-600"
-              } hover:text-red-500`}
-            >
-              <FontAwesomeIcon icon={faTrash} />
-              <span>Delete</span>
-            </button>
-          </>
-        )}
-      </div>
+      <PostActions
+        isDarkMode={isDarkMode}
+        isLiked={isLiked}
+        likes={likes}
+        comments={comments}
+        onLike={handleLike}
+        onComment={handleComment}
+        onShare={() => console.log("Share post")}
+      />
 
       {/* Comments Section */}
       <div className="mt-4">
@@ -245,18 +199,15 @@ const Post = ({ post, onDelete, onEdit }) => {
             placeholder="Add a comment..."
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            className={`w-full p-2 rounded-lg border ${
-              isDarkMode ? "border-gray-700" : "border-gray-300"
-            } placeholder-gray-500 ${
-              isDarkMode ? "text-white" : "text-gray-900"
-            } focus:outline-none focus:ring-blue-500 focus:border-black focus:z-10 sm:text-sm bg-transparent`}
+            className={`w-full p-2 rounded-lg border ${isDarkMode ? "border-gray-700" : "border-gray-300"
+              } placeholder-gray-500 ${isDarkMode ? "text-white" : "text-gray-900"
+              } focus:outline-none focus:ring-blue-500 focus:border-black focus:z-10 sm:text-sm bg-transparent`}
             rows="1"
           />
           <button
             onClick={handleComment}
-            className={`mt-2 px-4 py-2 rounded-lg ${
-              isDarkMode ? "bg-blue-700 hover:bg-blue-800" : "bg-blue-600 hover:bg-blue-700"
-            } text-white`}
+            className={`mt-2 px-4 py-2 rounded-lg ${isDarkMode ? "bg-blue-700 hover:bg-blue-800" : "bg-blue-600 hover:bg-blue-700"
+              } text-white`}
           >
             Comment
           </button>

@@ -4,10 +4,14 @@ import { useSelector } from "react-redux";
 import Image from "next/image";
 import axios from "axios";
 import { getCurrentUser } from "@utils/authUtils";
+import { useRouter } from "@node_modules/next/navigation";
+
 
 const CreatePost = () => {
   const theme = useSelector((state) => state.theme);
   const isDarkMode = theme === "dark";
+  const router = useRouter();
+
 
   // State for post content
   const [postContent, setPostContent] = useState("");
@@ -16,11 +20,16 @@ const CreatePost = () => {
   const [isLoading, setIsLoading] = useState(false); // Loading state
   const [error, setError] = useState(""); // Error message
 
+
+
+
+
   let user = null;
   if (typeof window !== "undefined") {
     user = getCurrentUser();
   }
 
+  console.log("user at create post", user);
 
   // Handle media file upload
   const handleMediaUpload = (e) => {
@@ -72,7 +81,8 @@ const CreatePost = () => {
   
       // Append post content
       formData.append("content", postContent);
-      formData.append("_id", user._id);
+      console.log('user at create post',user)
+      formData.append("id", user.id);
   
       // Append media files
       mediaFiles.forEach((file) => {
@@ -81,6 +91,7 @@ const CreatePost = () => {
   
       // Log FormData for debugging
       for (let [key, value] of formData.entries()) {
+        console.log('form data key value')
         console.log(key, value);
       }
   
@@ -98,6 +109,8 @@ const CreatePost = () => {
         setPostContent("");
         setMediaFiles([]);
         setMediaPreviews([]);
+
+   // Refresh the page to see the new post
       } else {
         setError("Failed to create post. Please try again.");
       }
@@ -110,6 +123,9 @@ const CreatePost = () => {
       setIsLoading(false);
     }
   };
+
+
+
   return (
     <div
       className={`bg-gray-50 p-4 rounded-lg ${

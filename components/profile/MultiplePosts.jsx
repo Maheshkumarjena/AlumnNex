@@ -11,11 +11,15 @@ const handleEditPost = (postId, newContent) => {
 
 
 
-const Posts = ({posts}) => {
+const Posts = ({posts,userProfile}) => {
+
+
+
   return (
     <div>
       {posts.map((post) => (
         <Post
+          userProfile={userProfile}
           key={post.id}
           post={post}
           onDelete={handleDeletePost}

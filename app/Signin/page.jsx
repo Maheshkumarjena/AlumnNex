@@ -39,7 +39,7 @@ const Page = () => {
   
       // If the response is successful
       if (response.status === 200) {
-        dispatch(signInSuccess(response.data.user))
+        dispatch(signInSuccess(response.data.user,),({username:response.data.user.username,email:response.data.user.email,dob:response.data.user.dob,userType:response.data.user.userType,id:response.data.user.id,profilePicture:response.data.user?.profilePicture || 'none'})); // Dispatch the success action
         setMessage('Login successful!');
         console.log('Login successful:', response.data);
         setTimeout(() => {
