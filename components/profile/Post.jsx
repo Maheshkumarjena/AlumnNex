@@ -6,7 +6,7 @@ import axios from "axios";
 import PostActions from "@components/PostActions";
 import PostMenu from "@components/PostMenu";
 
-const Post = ({ post, onDelete, onEdit, userProfile }) => {
+const Post = ({ post, onDelete, onEdit }) => {
   const theme = useSelector((state) => state.theme);
   const isDarkMode = theme === "dark";
   const [isLiked, setIsLiked] = useState(post.isLiked || false);
@@ -100,7 +100,7 @@ const Post = ({ post, onDelete, onEdit, userProfile }) => {
       <div className="flex justify-between items-center">
         <div className="flex items-center space-x-4">
           <Image
-            src={userProfile?.profilePicture || "/default-profile.png"}
+            src={post.user.profilePicture || "/default-profile.png"}
             alt="Profile Picture"
             width={40}
             height={40}
@@ -108,7 +108,7 @@ const Post = ({ post, onDelete, onEdit, userProfile }) => {
           />
           <div>
             <p className={`font-bold ${isDarkMode ? "text-white" : "text-gray-900"}`}>
-              {userProfile?.username || "User"}
+              {post.user.username || "User"}
             </p>
             <p className={`text-sm ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
               {post.timestamp}

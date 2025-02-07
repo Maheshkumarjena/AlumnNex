@@ -9,15 +9,14 @@ import Footer from '@components/Footer.jsx';
 //     title: "AlumNexus",
 //     description: "Discover & connect Alumni",
 //   };
-import { isDarkMode } from '@utils/generalUtils.js';
 
 const RootLayout = ({children}) => {
   return (
 
     
     <html className='hide-scrollbar ' lang='en'>
-    <body className={`overflow-x-hidden ${isDarkMode ? "bg-gray-900" :"bg-white"} `}>
-        
+    <body className={`overflow-x-hidden  bg-gray-900  `}>
+         
 
         <main className='app '>
     <StoreProvider store={store}>

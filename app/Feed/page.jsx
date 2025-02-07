@@ -2,49 +2,45 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Post from "@components/profile/Post";
+import { getCurrentUser } from "@utils/authUtils";
 
 const Feed = () => {
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-  const [user, setUser] = useState(null);
   const [newPostContent, setNewPostContent] = useState("");
+  let user = null;
+    if (typeof window !== "undefined") {
+      user = getCurrentUser();
+    }
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userResponse = await axios.get("http://localhost:5000/api/users/getProfile", {
-          withCredentials: true,
-        });
+        const postsResponse = await axios.post(
+          "http://localhost:5000/api/posts/getPosts",
+          { _id: user.id },
+          { withCredentials: true }
+        );
 
-        if (userResponse.data) {
-          setUser(userResponse.data);
-          const userId = userResponse.data._id;
-
-          const postsResponse = await axios.post(
-            "http://localhost:5000/api/posts/getPosts",
-            { _id: userId },
-            { withCredentials: true }
-          );
-
-          if (postsResponse.data && postsResponse.data.data) {
-            setPosts(postsResponse.data.data);
-          } else {
-            setError("Failed to retrieve posts.");
-          }
+        if (postsResponse.data && postsResponse.data.data) {
+          setPosts(postsResponse.data.data);
+        } else {
+          setError("Failed to retrieve posts.");
         }
-      } catch (err) {
+      }
+      catch (err) {
         console.error("Failed to fetch data:", err.message);
         setError("Failed to fetch data. Please try again later.");
       } finally {
         setIsLoading(false);
       }
-    };
 
+    }
     fetchData();
   }, []);
 
-  
+
 
   const handleDeletePost = async (postId) => {
     try {
@@ -75,7 +71,7 @@ const Feed = () => {
         { content: newPostContent, userId: user._id },
         { withCredentials: true }
       );
-      
+
       if (response.data) {
         setPosts([response.data, ...posts]);
         setNewPostContent("");
@@ -121,7 +117,6 @@ const Feed = () => {
             post={post}
             onDelete={handleDeletePost}
             onEdit={handleEditPost}
-            userProfile={post.user}
           />
         ))}
       </div>

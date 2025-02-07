@@ -80,7 +80,7 @@ const ProfilePage = () => {
         <NavigationTabs />
         <div className="mt-6">
           <CreatePost />
-          <Posts posts={posts} userProfile={user} /> {/* Pass posts data to the Posts component */}
+          <Posts posts={posts}  /> {/* Pass posts data to the Posts component */}
         </div>
         <AboutSection user={user} />
       </div>
