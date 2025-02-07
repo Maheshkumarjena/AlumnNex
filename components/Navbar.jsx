@@ -66,6 +66,7 @@ const Navbar = () => {
   };
 
   return (
+    
     <div className="overflow-x-hidden sticky top-0">
       <nav
         className={`navbar ${theme === "light"

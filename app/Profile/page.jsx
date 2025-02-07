@@ -42,6 +42,7 @@ const ProfilePage = () => {
 
           if (postsResponse.data) {
             setPosts(postsResponse.data.data);
+            console.log("Posts response at profile page=====================>",postsResponse.data.data);
           } else {
             setError(postsResponse.data.message || "Failed to retrieve posts.");
           }
