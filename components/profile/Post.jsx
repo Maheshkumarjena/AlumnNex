@@ -5,6 +5,7 @@ import Image from "next/image";
 import axios from "axios";
 import PostActions from "@components/PostActions";
 import PostMenu from "@components/PostMenu";
+import { getCurrentUser } from "@utils/authUtils";
 
 const Post = ({ post, onDelete, onEdit }) => {
   const theme = useSelector((state) => state.theme);
@@ -18,13 +19,22 @@ const Post = ({ post, onDelete, onEdit }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
+  let user = null;
+    if (typeof window !== "undefined") {
+      user = getCurrentUser();
+    }
   const handleLike = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.post(`/api/posts/${post.id}/like`, {
+      const response = await axios.post("http://localhost:5000/api/posts/likePost" , {
         like: !isLiked,
+        postId: post._id,
+        userId: user.id,
+      },{
+        withCredentials: true,
       });
-      if (response.data.status) {
+      if (response.data) {
+        console.log("response ::::::",response)
         setIsLiked(!isLiked);
         setLikes(isLiked ? likes - 1 : likes + 1);
       }
