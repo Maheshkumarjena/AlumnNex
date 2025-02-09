@@ -6,7 +6,7 @@ import PostActions from "@components/PostActions";
 import PostMenu from "@components/PostMenu";
 import { getCurrentUser } from "@utils/authUtils";
 
-const Post = ({ post, onDelete, onEdit }) => {
+const Post = ({ post, onDelete, onEdit , }) => {
   const theme = useSelector((state) => state.theme);
   const isDarkMode = theme === "dark";
   const [isLiked, setIsLiked] = useState(post.isLiked || false);
@@ -18,6 +18,12 @@ const Post = ({ post, onDelete, onEdit }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [replyingTo, setReplyingTo] = useState(null); // Track which comment is being replied to
+
+  const [commentView,setCommentView]=useState(false);
+
+  const handleCommentClick=()=>{
+    setCommentView(!commentView)
+  }
 
   let user = null;
   if (typeof window !== "undefined") {
@@ -279,12 +285,18 @@ const Post = ({ post, onDelete, onEdit }) => {
         onLike={handleLike}
         onComment={handleComment}
         onShare={() => console.log("Share post")}
+        setCommentView={handleCommentClick}
+        postId={post._id}
       />
 
       {/* Comments Section */}
-      <div className="mt-4">
+      <div className="mt-4 ">
+
+        { commentView ? (<div className="bg-gray-700 px-2 max-h-[30vh] overflow-scroll ">
         {comments.map((comment) => renderComment(comment)
       , console.log(comments,"comments"))}
+        </div>):""}
+        
         <div className="mt-4">
           <textarea
             placeholder={replyingTo ? `Replying to @${comments.find(c => c._id === replyingTo)?.userId?.username}` : "Add a comment..."}
