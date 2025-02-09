@@ -18,7 +18,7 @@ const Post = ({ post, onDelete, onEdit , }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [replyingTo, setReplyingTo] = useState(null); // Track which comment is being replied to
-
+  const [shares, setShares] = useState(post.shares); // Initialize share count
   const [commentView,setCommentView]=useState(false);
 
   const handleCommentClick=()=>{
@@ -37,8 +37,18 @@ const Post = ({ post, onDelete, onEdit , }) => {
     } else {
       setIsLiked(false);
     }
-  }, [post.likes, user.id]);
 
+  }, [post.likes, user.id , post._id]);
+
+  
+  // useEffect(()=>{
+    
+  //   const fetchShares = async () => {
+  //     const response = await axios.get(`http://localhost:5000/api/posts/${post._id}`);
+  //     setShares(response.data.shares); // Assuming shares is an array
+  //   };
+  //   fetchShares();
+  // },[])
 
   const handleEdit = async () => {
     try {
@@ -78,7 +88,6 @@ const Post = ({ post, onDelete, onEdit , }) => {
   const handleArchive = () => {
     console.log("Post archived");
   };
-
 
 
   const handleLike = async () => {
@@ -137,6 +146,10 @@ const Post = ({ post, onDelete, onEdit , }) => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleShare= async () =>{
+
   };
   
   useEffect(() => {
@@ -287,6 +300,10 @@ const Post = ({ post, onDelete, onEdit , }) => {
         onShare={() => console.log("Share post")}
         setCommentView={handleCommentClick}
         postId={post._id}
+        userId={user.id}
+        shares={shares}
+      setShares={setShares}
+        
       />
 
       {/* Comments Section */}
