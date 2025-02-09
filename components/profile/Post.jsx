@@ -1,5 +1,4 @@
-"use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import Image from "next/image";
 import axios from "axios";
@@ -18,51 +17,22 @@ const Post = ({ post, onDelete, onEdit }) => {
   const [editedContent, setEditedContent] = useState(post.content);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [replyingTo, setReplyingTo] = useState(null); // Track which comment is being replied to
 
   let user = null;
-    if (typeof window !== "undefined") {
-      user = getCurrentUser();
-    }
-  const handleLike = async () => {
-    try {
-      setIsLoading(true);
-      const response = await axios.post("http://localhost:5000/api/posts/likePost" , {
-        like: !isLiked,
-        postId: post._id,
-        userId: user.id,
-      },{
-        withCredentials: true,
-      });
-      if (response.data) {
-        console.log("response ::::::",response)
-        setIsLiked(!isLiked);
-        setLikes(isLiked ? likes - 1 : likes + 1);
-      }
-    } catch (err) {
-      setError("Failed to update like. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  if (typeof window !== "undefined") {
+    user = getCurrentUser();
+  }
 
-  const handleComment = async () => {
-    if (!newComment.trim()) return;
-    try {
-      setIsLoading(true);
-      const response = await axios.post(`/api/posts/${post.id}/comment`, {
-        content: newComment,
-      });
-      if (response.data.status) {
-        setComments([...comments, response.data.comment]);
-        setNewComment("");
-      }
-    } catch (err) {
-      setError("Failed to add comment. Please try again.");
-    } finally {
-      setIsLoading(false);
+  useEffect(() => {
+    if (post.likes.includes(user.id)) {
+      setIsLiked(true);
+    } else {
+      setIsLiked(false);
     }
-  };
+  }, [post.likes, user.id]);
 
+  
   const handleEdit = async () => {
     try {
       setIsLoading(true);
@@ -95,13 +65,117 @@ const Post = ({ post, onDelete, onEdit }) => {
   };
 
   const handleSave = () => {
-    // Implement save functionality
     console.log("Post saved");
   };
 
   const handleArchive = () => {
-    // Implement archive functionality
     console.log("Post archived");
+  };
+
+
+
+  const handleLike = async () => {
+    try {
+      setIsLoading(true);
+      const response = await axios.post(
+        "http://localhost:5000/api/posts/likePost",
+        {
+          postId: post._id,
+          userId: user.id,
+        },
+        { withCredentials: true }
+      );
+
+      if (response.data && response.data.success) {
+        setIsLiked((prevLiked) => !prevLiked);
+        setLikes((prevLikes) => (isLiked ? prevLikes - 1 : prevLikes + 1));
+      } else {
+        setError(response.data.message || "Failed to update like.");
+      }
+    } catch (err) {
+      console.error("Like request failed:", err.response?.data.message || err.message);
+      setError(err.response?.data?.message || "Failed to update like. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleComment = async () => {
+    if (!newComment.trim()) return;
+    try {
+      setIsLoading(true);
+      const response = await axios.post(
+        `http://localhost:5000/api/posts/commentPost/${post._id}`,
+        {
+          userId: user.id,
+          content: newComment,
+          parentCommentId: replyingTo, // Add parentCommentId if replying to a comment
+        },
+        { withCredentials: true }
+      );
+
+      if (response.data.success) {
+        setComments([...comments, response.data.comment]);
+        setNewComment("");
+        setReplyingTo(null); // Reset replyingTo after submitting the reply
+      }
+    } catch (err) {
+      setError("Failed to add comment. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleReply = (commentId, username) => {
+    setReplyingTo(commentId);
+    setNewComment(`@${username} `); // Auto-fill the input field with the username
+  };
+
+  const renderComment = (comment, level = 0) => {
+    const hasReplies = comment.replies && comment.replies.length > 0;
+
+    return (
+      <div key={comment._id} className="relative">
+        {/* Comment Line */}
+        {level > 0 && (
+          <div
+            className="absolute top-0 left-4 w-px h-full bg-gray-300"
+            style={{ transform: "translateX(-50%)" }}
+          />
+        )}
+
+        <div className="flex items-start space-x-2 mt-2">
+          <Image
+            src={comment.user?.profilePicture || "/default-profile.png"}
+            alt="Profile Picture"
+            width={30}
+            height={30}
+            className="w-8 h-8 rounded-full"
+          />
+          <div className="flex-1">
+            <p className={`text-sm ${isDarkMode ? "text-white" : "text-gray-900"}`}>
+              {comment.user?.username}
+            </p>
+            <p className={`text-sm ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
+              {comment?.content}
+            </p>
+            <button
+              className={`text-sm mt-1 ${isDarkMode ? "text-blue-400" : "text-blue-600"}`}
+              onClick={() => handleReply(comment._id, comment.user?.username)}
+            >
+              Reply
+            </button>
+          </div>
+        </div>
+
+        {/* Render Replies */}
+        {hasReplies && (
+          <div className="pl-8">
+            {comment.replies.map((reply) => renderComment(reply, level + 1))}
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -150,27 +224,26 @@ const Post = ({ post, onDelete, onEdit }) => {
         </p>
       )}
 
-{post.media && post.media.length > 0 && (
-  <div className="mt-4 grid grid-cols-2 md:grid-cols-2 gap-2 max-h-80  md:max-h-100 overflow-hidden relative">
-    {post.media.slice(0, 3).map((media, index) => (
-      <div key={index} className="relative w-full h-32 md:h-50 ">
-        <Image
-          src={media || "/default-profile.png"}
-          alt="Post Media"
-          layout="fill"
-          objectFit="cover"
-          className="rounded-lg md:w-[50vw] "
-        />
-      </div>
-    ))}
-    {post.media.length > 3 && (
-      <div className="relative w-full h-32 md:h-40 flex items-center justify-center bg-black bg-opacity-50 rounded-lg cursor-pointer">
-        <p className="text-white font-bold">+{post.media.length - 3} More</p>
-      </div>
-    )}
-  </div>
-)}
-
+      {post.media && post.media.length > 0 && (
+        <div className="mt-4 grid grid-cols-2 md:grid-cols-2 gap-2 max-h-80 md:max-h-100 overflow-hidden relative">
+          {post.media.slice(0, 3).map((media, index) => (
+            <div key={index} className="relative w-full h-32 md:h-50">
+              <Image
+                src={media || "/default-profile.png"}
+                alt="Post Media"
+                layout="fill"
+                objectFit="cover"
+                className="rounded-lg md:w-[50vw]"
+              />
+            </div>
+          ))}
+          {post.media.length > 3 && (
+            <div className="relative w-full h-32 md:h-40 flex items-center justify-center bg-black bg-opacity-50 rounded-lg cursor-pointer">
+              <p className="text-white font-bold">+{post.media.length - 3} More</p>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Post Actions */}
       <PostActions
@@ -185,28 +258,10 @@ const Post = ({ post, onDelete, onEdit }) => {
 
       {/* Comments Section */}
       <div className="mt-4">
-        {comments.map((comment, index) => (
-          <div key={index} className="flex items-center space-x-2 mt-2">
-            <Image
-              src={comment.user.profilePicture || "/default-profile.png"}
-              alt="Profile Picture"
-              width={30}
-              height={30}
-              className="w-8 h-8 rounded-full"
-            />
-            <div>
-              <p className={`text-sm ${isDarkMode ? "text-white" : "text-gray-900"}`}>
-                {comment.user.username}
-              </p>
-              <p className={`text-sm ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
-                {comment.content}
-              </p>
-            </div>
-          </div>
-        ))}
+        {comments.map((comment) => renderComment(comment))}
         <div className="mt-4">
           <textarea
-            placeholder="Add a comment..."
+            placeholder={replyingTo ? `Replying to @${comments.find(c => c._id === replyingTo)?.user?.username}` : "Add a comment..."}
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
             className={`w-full p-2 rounded-lg border ${isDarkMode ? "border-gray-700" : "border-gray-300"
@@ -219,8 +274,17 @@ const Post = ({ post, onDelete, onEdit }) => {
             className={`mt-2 px-4 py-2 rounded-lg ${isDarkMode ? "bg-blue-700 hover:bg-blue-800" : "bg-blue-600 hover:bg-blue-700"
               } text-white`}
           >
-            Comment
+            {replyingTo ? "Reply" : "Comment"}
           </button>
+          {replyingTo && (
+            <button
+              onClick={() => setReplyingTo(null)}
+              className={`mt-2 ml-2 px-4 py-2 rounded-lg ${isDarkMode ? "bg-gray-700 hover:bg-gray-800" : "bg-gray-600 hover:bg-gray-700"
+                } text-white`}
+            >
+              Cancel Reply
+            </button>
+          )}
         </div>
       </div>
 

@@ -41,6 +41,7 @@ const Feed = () => {
   }, []);
 
 
+  console.log(posts)
 
   const handleDeletePost = async (postId) => {
     try {

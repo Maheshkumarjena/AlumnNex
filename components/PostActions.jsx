@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart, faComment, faShare } from "@fortawesome/free-solid-svg-icons";
 
 const PostActions = ({ isDarkMode, isLiked, likes, comments, onLike, onComment, onShare }) => {
+  // console.log(isLiked,"at postActions")
   return (
     <div className="mt-4 flex space-x-4">
       <button
@@ -11,7 +12,7 @@ const PostActions = ({ isDarkMode, isLiked, likes, comments, onLike, onComment, 
           } hover:text-blue-500`}
       >
         <FontAwesomeIcon icon={faHeart} className={isLiked ? "text-red-500" : ""} />
-        <span>{likes}</span>
+        <span>{likes.length}</span>
       </button>
       <button
         onClick={onComment}
