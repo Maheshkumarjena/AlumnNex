@@ -24,6 +24,7 @@ const Post = ({ post, onDelete, onEdit }) => {
     user = getCurrentUser();
   }
 
+
   useEffect(() => {
     if (post.likes.includes(user.id)) {
       setIsLiked(true);
@@ -32,7 +33,7 @@ const Post = ({ post, onDelete, onEdit }) => {
     }
   }, [post.likes, user.id]);
 
-  
+
   const handleEdit = async () => {
     try {
       setIsLoading(true);
@@ -102,22 +103,28 @@ const Post = ({ post, onDelete, onEdit }) => {
 
   const handleComment = async () => {
     if (!newComment.trim()) return;
+  
     try {
       setIsLoading(true);
+  
+      const payload = {
+        userId: user.id,
+        content: newComment,
+        ...(replyingTo && { parentCommentId: replyingTo }) // Conditionally include parentCommentId
+      };
+  
       const response = await axios.post(
         `http://localhost:5000/api/posts/commentPost/${post._id}`,
-        {
-          userId: user.id,
-          content: newComment,
-          parentCommentId: replyingTo, // Add parentCommentId if replying to a comment
-        },
+        payload,
         { withCredentials: true }
       );
-
+  
       if (response.data.success) {
-        setComments([...comments, response.data.comment]);
+        console.log("response inside the handleComment", response.data);
+  
+        setComments(prevComments => [...prevComments, response.data.comments]); // Ensure proper merging
         setNewComment("");
-        setReplyingTo(null); // Reset replyingTo after submitting the reply
+        setReplyingTo(null);
       }
     } catch (err) {
       setError("Failed to add comment. Please try again.");
@@ -125,8 +132,17 @@ const Post = ({ post, onDelete, onEdit }) => {
       setIsLoading(false);
     }
   };
+  
+  useEffect(() => {
+    console.log("Updated comments:", comments);
+  }, [comments]);
+  
 
   const handleReply = (commentId, username) => {
+    console.log("comments when handleReply called",comments
+
+    )
+    console.log("replying to",replyingTo)
     setReplyingTo(commentId);
     setNewComment(`@${username} `); // Auto-fill the input field with the username
   };
@@ -136,7 +152,7 @@ const Post = ({ post, onDelete, onEdit }) => {
 
     return (
       <div key={comment._id} className="relative">
-        {/* Comment Line */}
+        {/* Vertical line to indicate nesting */}
         {level > 0 && (
           <div
             className="absolute top-0 left-4 w-px h-full bg-gray-300"
@@ -144,24 +160,33 @@ const Post = ({ post, onDelete, onEdit }) => {
           />
         )}
 
-        <div className="flex items-start space-x-2 mt-2">
+        {/* Comment Container */}
+        <div className="flex items-start space-x-2 mt-2" style={{ paddingLeft: `${level * 24}px` }}>
+          {/* Profile Picture */}
           <Image
-            src={comment.user?.profilePicture || "/default-profile.png"}
+            src={comment.userId?.profilePicture || "/default-profile.png"}
             alt="Profile Picture"
             width={30}
             height={30}
             className="w-8 h-8 rounded-full"
           />
+
+          {/* Comment Content */}
           <div className="flex-1">
+            {/* Username */}
             <p className={`text-sm ${isDarkMode ? "text-white" : "text-gray-900"}`}>
-              {comment.user?.username}
+              {comment.userId?.username}
             </p>
+
+            {/* Comment Text */}
             <p className={`text-sm ${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
               {comment?.content}
             </p>
+
+            {/* Reply Button */}
             <button
               className={`text-sm mt-1 ${isDarkMode ? "text-blue-400" : "text-blue-600"}`}
-              onClick={() => handleReply(comment._id, comment.user?.username)}
+              onClick={() => handleReply(comment._id, comment.userId?.username)}
             >
               Reply
             </button>
@@ -258,10 +283,11 @@ const Post = ({ post, onDelete, onEdit }) => {
 
       {/* Comments Section */}
       <div className="mt-4">
-        {comments.map((comment) => renderComment(comment))}
+        {comments.map((comment) => renderComment(comment)
+      , console.log(comments,"comments"))}
         <div className="mt-4">
           <textarea
-            placeholder={replyingTo ? `Replying to @${comments.find(c => c._id === replyingTo)?.user?.username}` : "Add a comment..."}
+            placeholder={replyingTo ? `Replying to @${comments.find(c => c._id === replyingTo)?.userId?.username}` : "Add a comment..."}
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
             className={`w-full p-2 rounded-lg border ${isDarkMode ? "border-gray-700" : "border-gray-300"
