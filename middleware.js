@@ -6,7 +6,7 @@ export function middleware(request) {
     // Get the user authentication token from cookies
     const userToken = request.cookies.get('token')?.value || null;  
 
-    console.log("User Token:", userToken);
+    console.log("User Token:",  userToken);
 
     const pathname = request.nextUrl.pathname;
 
