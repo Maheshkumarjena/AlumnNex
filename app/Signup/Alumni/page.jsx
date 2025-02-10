@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import OAuthButton from "@components/OAuth";
+import { getBackendURL } from "@utils/generalUtils";
 
 
 const Page = () => {
@@ -37,7 +38,7 @@ const Page = () => {
       const isAlumniRoute = routePath.includes('Alumni'); // Check if the route contains "Alumni"
       console.log(isAlumniRoute)
       const response = await axios.post(
-        'http://localhost:5000/api/auth/signup',
+        `${getBackendURL()}/api/auth/signup`,
         { username: name, email, password, dob, almaMater, lastYearOfEducation },
         {
           headers: {

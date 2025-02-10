@@ -8,6 +8,7 @@ import { useDispatch,useSelector } from 'react-redux'; // Use 'useSelector' corr
 import { useRouter } from "next/navigation";
 import { signInFailure,signInStart,signInSuccess } from "@store/features/user/userSlice";
 import OAuthButton from "@components/OAuth";
+import { getBackendURL } from "@utils/generalUtils";
 
 const Page = () => {
   const theme = useSelector((state) => state.theme); 
@@ -27,7 +28,7 @@ const Page = () => {
     try {
       dispatch(signInStart())
       const response = await axios.post(
-        'http://localhost:5000/api/auth/signin',
+        `${getBackendURL()}/api/auth/signin`,
         { email, password }, // Data payload
         {
           headers: {

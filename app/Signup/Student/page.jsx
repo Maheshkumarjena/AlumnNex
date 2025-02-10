@@ -8,6 +8,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { set } from "mongoose";
 import OAuthButton from "@components/OAuth";
+import { getBackendURL } from "@utils/generalUtils";
+
 
 const Page = () => {
   const theme = useSelector((state) => state.theme);
@@ -34,7 +36,7 @@ const Page = () => {
       const isStudentRoute = routePath.includes('Student'); // Check if the route contains "Alumni"
       console.log(isStudentRoute)
       const response = await axios.post(
-        'http://localhost:5000/api/auth/signup',
+        `${getBackendURL()}/api/auth/signup`,
         { username:name, email, password, dob  },
         {
           headers: {

@@ -6,6 +6,7 @@ import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
+import { getBackendURL } from "@utils/generalUtils";
 
 export default function OAuthButton() {
     const theme = useSelector((state) => state.theme);
@@ -56,7 +57,7 @@ export default function OAuthButton() {
         try {
             setIsLoading(true); // Disable UI interactions while submitting
 
-            const res = await axios.post('http://localhost:5000/api/auth/google', {
+            const res = await axios.post(`${getBackendURL()}/api/auth/google`, {
                 ...userInfo, // send user info from state
                 accountType,
             },{

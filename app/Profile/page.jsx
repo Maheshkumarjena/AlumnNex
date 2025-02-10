@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 import { getCurrentUser } from "@utils/authUtils";
 import axios from "axios";
 import ConnectionsSection from "@components/ConnectionCard";
+import { getBackendURL } from "@utils/generalUtils";
 
 export const mockConnections = [
   {
@@ -72,7 +73,7 @@ const ProfilePage = () => {
       try {
         // Fetch user data
         const userResponse = await axios.get(
-          "http://localhost:5000/api/users/getProfile",
+          `${getBackendURL()}/api/users/getProfile`,
           {
             withCredentials: true,
           }
@@ -84,7 +85,7 @@ const ProfilePage = () => {
 
           // Fetch posts
           const postsResponse = await axios.post(
-            "http://localhost:5000/api/posts/getPosts",
+            `${getBackendURL()}/api/posts/getPosts`,
             { _id: userId },
             { withCredentials: true }
           );

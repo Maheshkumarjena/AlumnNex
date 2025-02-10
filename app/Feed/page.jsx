@@ -6,6 +6,7 @@ import { getCurrentUser } from "@utils/authUtils";
 import Suggestions from "@components/Suggestion";
 import Navigation from "@components/FeedNavigation";
 import SearchBar from "@components/SearchBar";
+import { getBackendURL } from "@utils/generalUtils";
 
 const Feed = () => {
   const [posts, setPosts] = useState([]);
@@ -22,7 +23,7 @@ const Feed = () => {
     const fetchData = async () => {
       try {
         const postsResponse = await axios.post(
-          "http://localhost:5000/api/posts/getPosts",
+          `${getBackendURL()}/api/posts/getPosts`,
           { _id: user.id },
           { withCredentials: true }
         );
@@ -44,7 +45,7 @@ const Feed = () => {
     if (!newPostContent.trim()) return;
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/posts/createPost",
+        `${getBackendURL()}/api/posts/createPost`,
         { content: newPostContent, userId: user._id },
         { withCredentials: true }
       );

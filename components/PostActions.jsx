@@ -5,6 +5,8 @@ import { faHeart, faComment, faShare } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import { Alert, AlertDescription } from "./alert";
 import axios from "axios"; // Import axios for API calls
+import { getBackendURL } from "@utils/generalUtils";
+
 
 const PostActions = ({ 
   isDarkMode, 
@@ -29,7 +31,7 @@ const PostActions = ({
   
       // Call the backend API to increment the share count
       const response = await axios.post(
-        `http://localhost:5000/api/posts/${postId}/share`,
+        `${getBackendURL()}/api/posts/${postId}/share`,
         { userId }, // Pass userId in the request body
         { withCredentials: true } // Send cookies if authentication is required
       );
