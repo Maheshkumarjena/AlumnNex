@@ -10,6 +10,7 @@ import { logout } from "@store/features/user/userSlice";
 import axios from "axios";
 import { getCurrentUser } from "@utils/authUtils";
 import Image from "next/image"; // Correct import
+import { getBackendURL } from "@utils/generalUtils";
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -20,10 +21,13 @@ const Navbar = () => {
   }
   const theme = useSelector((state) => state.theme);
 
+  console.log(process.env.NEXT_PUBLIC_BACKEND_SERVE);
+  console.log(getBackendURL())
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/users/getProfile", {
+        const response = await axios.get(`${getBackendURL()}/api/users/getProfile`, {
           withCredentials: true,
         });
         if (response.data.status) {
