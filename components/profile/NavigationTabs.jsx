@@ -1,44 +1,32 @@
-"use client";
 import { useSelector } from "react-redux";
 
-const NavigationTabs = () => {
+const NavigationTabs = ({ activeTab, onTabChange }) => {
   const theme = useSelector((state) => state.theme);
   const isDarkMode = theme === "dark";
 
+  const tabs = ["Posts", "About", "Connections"];
+
   return (
-    <div className={`flex justify-between mt-6 border-b ${
-      isDarkMode ? "border-gray-700" : "border-gray-300"
-    }`}>
-      <button className={`py-2 px-4 hover:bg-gray-100 rounded-t-lg ${
-        isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
-      }`}>
-        Posts
-      </button>
-      <button className={`py-2 px-4 hover:bg-gray-100 rounded-t-lg ${
-        isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
-      }`}>
-        About
-      </button>
-      <button className={`py-2 px-4 hover:bg-gray-100 rounded-t-lg ${
-        isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
-      }`}>
-        Connections
-      </button>
-      <button className={`py-2 px-4 hover:bg-gray-100 rounded-t-lg ${
-        isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
-      }`}>
-        Groups
-      </button>
-      <button className={`py-2 px-4 hover:bg-gray-100 rounded-t-lg ${
-        isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
-      }`}>
-        Events
-      </button>
-      <button className={`py-2 px-4 hover:bg-gray-100 rounded-t-lg ${
-        isDarkMode ? "hover:bg-gray-700" : "hover:bg-gray-100"
-      }`}>
-        Media
-      </button>
+    <div className={`border-b mt-6 ${isDarkMode ? "border-gray-700" : "border-gray-200"}`}>
+      <nav className="flex space-x-8 overflow-x-auto scrollbar-hide">
+        {tabs.map((tab) => (
+          <button
+            key={tab}
+            onClick={() => onTabChange(tab)}
+            className={`py-4 px-1 border-b-2 font-medium text-sm transition-all duration-200 ${
+              activeTab === tab
+                ? isDarkMode
+                  ? "border-blue-400 text-blue-400"
+                  : "border-blue-500 text-blue-600"
+                : isDarkMode
+                ? "border-transparent text-gray-400 hover:text-gray-300"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
+      </nav>
     </div>
   );
 };

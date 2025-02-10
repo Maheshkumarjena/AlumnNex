@@ -45,8 +45,8 @@ const ProfileHeader = ({ user }) => {
             Connect
           </button>
           <button
-            className={`ml-2 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 ${
-              isDarkMode ? "bg-gray-700 text-gray-300 hover:bg-gray-600" : "bg-gray-200 hover:bg-gray-300"
+            className={`ml-2 bg-gray-200 text-black px-4 py-2 rounded-lg hover:bg-gray-300 ${
+              isDarkMode ? "bg-gray-700 text-white hover:bg-gray-600" : "bg-gray-200 hover:bg-gray-100"
             }`}
           >
             Message

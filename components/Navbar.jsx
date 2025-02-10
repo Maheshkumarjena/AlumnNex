@@ -246,7 +246,7 @@ const Navbar = () => {
                   Events
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   href="Resources"
                   className={`block py-2 pl-3 pr-4 ${theme === "light"
@@ -256,7 +256,7 @@ const Navbar = () => {
                 >
                   Resources
                 </Link>
-              </li>
+              </li> */}
 
               {!loggedIn && (
                 <li>

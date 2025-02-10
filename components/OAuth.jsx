@@ -71,7 +71,7 @@ export default function OAuthButton() {
             setIsSubmitted(true); 
             setMessage('Sigin successful!');
             setTimeout(() => {
-                router.push("/");
+                router.push("/Feed");
                 setMessage('') // Redirect to the home page or any other page
               }, 1000);
         } catch (error) {

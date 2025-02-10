@@ -43,7 +43,7 @@ const Page = () => {
         setMessage('Login successful!');
         console.log('Login successful:', response.data);
         setTimeout(() => {
-          router.push("/");
+          router.push("/Feed");
           setMessage("") // Redirect to the home page or any other page
         }, 1000);
       }
