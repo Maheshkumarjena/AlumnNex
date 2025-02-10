@@ -5,7 +5,6 @@ import axios from "axios";
 import PostActions from "@components/PostActions";
 import PostMenu from "@components/PostMenu";
 import { getCurrentUser } from "@utils/authUtils";
-import { getBackendURL } from "@utils/generalUtils";
 
 const Post = ({ post, onDelete, onEdit , }) => {
   const theme = useSelector((state) => state.theme);
@@ -95,7 +94,7 @@ const Post = ({ post, onDelete, onEdit , }) => {
     try {
       setIsLoading(true);
       const response = await axios.post(
-        `${getBackendURL()}/api/posts/likePost`,
+        "http://localhost:5000/api/posts/likePost",
         {
           postId: post._id,
           userId: user.id,
@@ -130,7 +129,7 @@ const Post = ({ post, onDelete, onEdit , }) => {
       };
   
       const response = await axios.post(
-        `${getBackendURL()}/api/posts/commentPost/${post._id}`,
+        `http://localhost:5000/api/posts/commentPost/${post._id}`,
         payload,
         { withCredentials: true }
       );

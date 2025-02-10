@@ -10,52 +10,6 @@ import Posts from "@components/profile/MultiplePosts";
 import { useSelector } from "react-redux";
 import { getCurrentUser } from "@utils/authUtils";
 import axios from "axios";
-import ConnectionsSection from "@components/ConnectionCard";
-import { getBackendURL } from "@utils/generalUtils";
-
-export const mockConnections = [
-  {
-    _id: '1',
-    username: 'Sarah Wilson',
-    profilePicture: 'https://randomuser.me/api/portraits/women/1.jpg'
-  },
-  {
-    _id: '2',
-    username: 'John Doe',
-    profilePicture: null  // This will trigger the fallback icon
-  },
-  {
-    _id: '3',
-    username: 'Emma Thompson',
-    profilePicture: 'https://randomuser.me/api/portraits/women/2.jpg'
-  },
-  {
-    _id: '4',
-    username: 'Michael Chen',
-    profilePicture: 'https://randomuser.me/api/portraits/men/1.jpg'
-  },
-  {
-    _id: '5',
-    username: 'David Rodriguez',
-    profilePicture: null
-  },
-  {
-    _id: '6',
-    username: 'Lisa Kim',
-    profilePicture: 'https://randomuser.me/api/portraits/women/3.jpg'
-  },
-  {
-    _id: '7',
-    username: 'Alex Johnson',
-    profilePicture: 'https://randomuser.me/api/portraits/men/2.jpg'
-  },
-  {
-    _id: '8',
-    username: 'Maria Garcia',
-    profilePicture: 'https://randomuser.me/api/portraits/women/4.jpg'
-  }
-];
-
 
 const ProfilePage = () => {
   const theme = useSelector((state) => state.theme);
@@ -64,49 +18,34 @@ const ProfilePage = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState("Posts");
-  const [connections, setConnections] = useState([]);
 
-  // Fetch user data, posts, and connections
+  // Fetch user data and posts
   useEffect(() => {
+    // Define the async function inside the useEffect
     const fetchData = async () => {
       try {
         // Fetch user data
-        const userResponse = await axios.get(
-          `${getBackendURL()}/api/users/getProfile`,
-          {
-            withCredentials: true,
-          }
-        );
+        const userResponse = await axios.get("http://localhost:5000/api/users/getProfile", {
+          withCredentials: true,
+        });
 
         if (userResponse.data) {
-          setUser(userResponse.data);
+          setUser(userResponse.data); // Set user data
           const userId = userResponse.data._id;
 
-          // Fetch posts
+          // Fetch posts using the user ID
           const postsResponse = await axios.post(
-            `${getBackendURL()}/api/posts/getPosts`,
+            "http://localhost:5000/api/posts/getPosts",
             { _id: userId },
             { withCredentials: true }
           );
 
           if (postsResponse.data) {
             setPosts(postsResponse.data.data);
+            console.log("Posts response at profile page=====================>",postsResponse.data.data);
           } else {
             setError(postsResponse.data.message || "Failed to retrieve posts.");
           }
-
-          // Fetch connections (assuming you have an endpoint for this)
-          // const connectionsResponse = await axios.get(
-          //   `http://localhost:5000/api/users/connections/${userId}`,
-          //   { withCredentials: true }
-          // );
-
-          // if (connectionsResponse.data) {
-          //   setConnections(connectionsResponse.data);
-          // }
-
-          setConnections(mockConnections)
         }
       } catch (err) {
         console.error("Failed to fetch data:", err.message);
@@ -116,75 +55,34 @@ const ProfilePage = () => {
       }
     };
 
+    // Call the async function
     fetchData();
-  }, []);
+  }, []); // Empty dependency array ensures this runs only once on mount
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-      </div>
-    );
+    return <div>Loading...</div>; // Show loading state while fetching data
   }
 
   if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="bg-red-50 dark:bg-red-900 p-4 rounded-lg">
-          <p className="text-red-600 dark:text-red-200">Error: {error}</p>
-        </div>
-      </div>
-    );
+    return <div>Error: {error}</div>; // Show error message if something went wrong
   }
 
   if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500 dark:text-gray-400">No user data found.</p>
-      </div>
-    );
+    return <div>No user data found.</div>; // Fallback if user data is not available
   }
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case "Posts":
-        return (
-          <div className="space-y-6">
-            <CreatePost />
-            <Posts posts={posts} />
-          </div>
-        );
-      case "About":
-        return <AboutSection user={user} />;
-      case "Connections":
-        return <ConnectionsSection connections={connections} />;
-      default:
-        return null;
-    }
-  };
-
   return (
-    <div
-      className={`min-h-screen p-2 sm:p-4 ${
-        isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"
-      }`}
-    >
-      <div
-        className={`max-w-4xl mx-auto p-2 rounded-lg shadow-md overflow-hidden ${
-          isDarkMode ? "bg-gray-800" : "bg-gray-100"
-        }`}
-      >
-        <div className="sticky p-2 sm:p-4 top-0 z-10 bg-inherit">
-          <ProfileHeader user={user} />
-          <StatsBar user={user} />
-          <NavigationTabs activeTab={activeTab} onTabChange={setActiveTab} />
+    <div className={`min-h-screen p-4 ${isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-900"}`}>
+      <div className={`max-w-4xl mx-auto rounded-lg shadow-md p-6 ${isDarkMode ? "bg-gray-800" : "bg-gray-100"}`}>
+        {/* Pass user data as props to child components */}
+        <ProfileHeader user={user} />
+        <StatsBar user={user} />
+        <NavigationTabs />
+        <div className="mt-6">
+          <CreatePost />
+          <Posts posts={posts}  /> {/* Pass posts data to the Posts component */}
         </div>
-        
-        <div className="p-4 sm:p-6">
-          <div className="max-w-full overflow-x-hidden">
-            {renderContent()}
-          </div>
-        </div>
+        <AboutSection user={user} />
       </div>
     </div>
   );

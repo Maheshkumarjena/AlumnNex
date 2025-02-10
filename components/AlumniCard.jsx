@@ -14,7 +14,7 @@ const AlumniCard = ({image ,name , title, company,href ,id}) => {
       theme === "light" ? "bg-white text-gray-900" : "bg-gray-800 text-gray-100"
     } rounded-lg shadow-lg text-center mt-4 max-h-[250px] md:max-h-[280px] lg:max-h-[450px]`}
   >
-    <Link href={`Alumni/alumniProfile/${id}`} >
+    <Link href={`Profile`} >
       <img
         src={image}
         alt={name}
